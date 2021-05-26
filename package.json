@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
+  "name": "1password-connect-action",
+  "version": "1.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "Grab 1Password Credentials from Connect API",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -10,12 +10,11 @@
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
-    "test": "jest",
-    "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
+    "all": "npm run build && npm run format && npm run lint && npm run package"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/mcmarkj/1password-actions.git"
   },
   "keywords": [
     "actions",
@@ -28,8 +27,10 @@
     "@actions/core": "^1.2.6"
   },
   "devDependencies": {
+    "@1password/connect": "^1.0.1",
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.9",
+    "@types/request": "^2.48.5",
     "@typescript-eslint/parser": "^4.8.1",
     "@vercel/ncc": "^0.25.1",
     "eslint": "^7.17.0",

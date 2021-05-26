@@ -1,11 +1,16 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: '1Password Github Actions'
+description: 'Grabs secrets from 1Password Connect Servers and sets them as outputs for your Github Actions runner'
+author: 'Mark McWhirter'
 inputs:
-  milliseconds: # change this
+  secret-path:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Path to the secrets'
+  connect-server-url:
+    required: true
+    description: 'URL for the 1Password Connet Server'
+  connect-server-token:
+    required: true
+    description: 'Token for the 1Password Connect Server'
 runs:
   using: 'node12'
   main: 'dist/index.js'

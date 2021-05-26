@@ -37,6 +37,7 @@ const getSecret = async (
         const outputName = `${outputString}_${items.id?.toLowerCase()}`
         core.setSecret(items.value.toString())
         core.setOutput(outputName, items.value.toString())
+        core.info(`Secret ready for use: ${outputName}`)
       }
     }
   } catch (error) {

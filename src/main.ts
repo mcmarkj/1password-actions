@@ -39,8 +39,7 @@ const getSecret = async (
 async function run(): Promise<void> {
   try {
     // Translate the vault path into it's respective segments
-    //const secretPath = core.getInput("secret-path")
-    const secretPath = 'marvin-secrets-development > anubis.github-credentials'
+    const secretPath = core.getInput('secret-path')
     const itemRequests = parsing.parseItemRequestsInput(secretPath)
     for (const itemRequest of itemRequests) {
       // Get the vault ID for the vault

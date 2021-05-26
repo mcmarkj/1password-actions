@@ -9,14 +9,18 @@ const op = OnePasswordConnect({
   keepAlive: true
 })
 
-const getVaultID = async (vaultName: string): Promise<string> => {
-  const vaults = await op.listVaults()
-  for (const vault of vaults) {
-    if (vault.name === vaultName) {
-      return vault.id || ''
+const getVaultID = async (vaultName: string): Promise<string | undefined> => {
+  try {
+    const vaults = await op.listVaults()
+    for (const vault of vaults) {
+      if (vault.name === vaultName) {
+        return vault.id
+      }
     }
+    return
+  } catch (error) {
+    core.setFailed(error.message)
   }
-  return ''
 }
 
 const getSecret = async (
@@ -24,15 +28,19 @@ const getSecret = async (
   secretTitle: string,
   outputString: string
 ): Promise<void> => {
-  const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
+  try {
+    const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
 
-  const secretFields = vaultItems['fields'] || []
-  for (const items of secretFields) {
-    if (items.value != null) {
-      const outputName = `${outputString}_${items.id?.toLowerCase()}`
-      core.setSecret(items.value.toString())
-      core.exportVariable(outputName, items.value.toString())
+    const secretFields = vaultItems['fields'] || []
+    for (const items of secretFields) {
+      if (items.value != null) {
+        const outputName = `${outputString}_${items.id?.toLowerCase()}`
+        core.setSecret(items.value.toString())
+        core.exportVariable(outputName, items.value.toString())
+      }
     }
+  } catch (error) {
+    core.setFailed(error.message)
   }
 }
 
@@ -44,11 +52,15 @@ async function run(): Promise<void> {
     for (const itemRequest of itemRequests) {
       // Get the vault ID for the vault
       const secretVault = itemRequest.vault
-      const vaultID = getVaultID(secretVault)
+      const vaultID = await getVaultID(secretVault)
       // Set the secrets fields
       const secretTitle = itemRequest.name
       const outputString = itemRequest.outputName
-      getSecret(await vaultID, secretTitle, outputString)
+      if (vaultID !== undefined) {
+        getSecret(vaultID, secretTitle, outputString)
+      } else {
+        core.setFailed("Can't find vault.")
+      }
     }
   } catch (error) {
     core.setFailed(error.message)

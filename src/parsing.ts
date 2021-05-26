@@ -7,6 +7,7 @@ export type ItemRequest = {
 /**
  * Parses an item requests input string into vault names, item names and their resulting normalized output names.
  * Based on parsing from https://github.com/hashicorp/vault-action/
+ * Big thanks to https://github.com/RobotsAndPencils/1password-action for this code.
  */
 export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
   const itemRequestLines = itemInput

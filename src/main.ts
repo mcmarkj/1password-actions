@@ -36,7 +36,7 @@ const getSecret = async (
       if (items.value != null) {
         const outputName = `${outputString}_${items.id?.toLowerCase()}`
         core.setSecret(items.value.toString())
-        core.exportVariable(outputName, items.value.toString())
+        core.setOutput(outputName, items.value.toString())
       }
     }
   } catch (error) {

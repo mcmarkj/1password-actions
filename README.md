@@ -6,7 +6,7 @@ How to use in your workflow:
 
 ```yaml
 - name: Import Creds
-  uses: markmarkj/1password-actions@v1
+  uses: mcmarkj/1password-actions@v1
   id: creds
   with:
     connect-server-url: <Your 1password Connect Server URL>

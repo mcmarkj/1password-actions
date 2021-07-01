@@ -34,7 +34,7 @@ const getSecret = async (
     const secretFields = vaultItems['fields'] || []
     for (const items of secretFields) {
       if (items.value != null) {
-        const outputName = `${outputString}_${items.id?.toLowerCase()}`
+        const outputName = `${outputString}_${items.label?.toLowerCase()}`
         core.setSecret(items.value.toString())
         core.setOutput(outputName, items.value.toString())
         core.info(`Secret ready for use: ${outputName}`)

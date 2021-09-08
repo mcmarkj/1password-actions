@@ -11,6 +11,10 @@ inputs:
   connect-server-token:
     required: true
     description: 'Token for the 1Password Connect Server'
+  export-env-vars:
+    required: false
+    default: "false"
+    description: 'Export the secrets automatically as environmental variables for the rest of the pipeline'
 runs:
   using: 'node12'
   main: 'lib/main.js'

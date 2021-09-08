@@ -2,16 +2,31 @@ name: 'build-test'
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
-    branches:
-      - main
-      - 'releases/*'
 
 jobs:
-  build: # make sure build/ci work properly
+  test: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          npm install
-      - run: |
-          npm run all
+      - name: Import Creds
+        uses: ./
+        id: creds
+        with:
+          connect-server-url: ${{ secrets.CONNECT_SERVER_URL }}
+          connect-server-token: ${{ secrets.CONNECT_SERVER_TOKEN }}
+          export-env-vars: "true"
+          secret-path: |
+            infra-secrets-shared > 1password.github-action-test-secret > username | MY_TEST_USERNAME
+            infra-secrets-shared > 1password.github-action-test-secret | SECRET_NAME
+            infra-secrets-shared > 1password.github-action-test-secret
+      - name: Test ENV Var Set
+        run: |
+          if [[ "$MY_TEST_USERNAME" != "THIS_IS_the_USERNAME" ]]; then echo "Username is not correct" && exit 1; fi
+      - name: Test SECRET_NAME_username Var Set
+        run: |
+          if [[ "$SECRET_NAME_username" != "THIS_IS_the_USERNAME" ]]; then echo "Username is not correct" && exit 1; fi
+      - name: Test Accessing via Env Block
+        env:
+          TOKEN: ${{ steps.creds.outputs.SECRET_NAME_token }}
+        run: |
+          if [[ "$TOKEN" != "A_token_Exists" ]]; then echo "Token is not correct" && exit 1; fi

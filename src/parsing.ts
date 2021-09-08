@@ -1,7 +1,9 @@
 export type ItemRequest = {
   vault: string
   name: string
+  field: string
   outputName: string
+  outputOverriden: boolean
 }
 
 /**
@@ -20,6 +22,8 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
   for (const itemRequestLine of itemRequestLines) {
     let pathSpec = itemRequestLine
     let outputName = null
+    let field = null
+    let outputOverriden = false
 
     const renameSigilIndex = itemRequestLine.lastIndexOf('|')
     if (renameSigilIndex > -1) {
@@ -49,26 +53,32 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
         .filter(part => part.length !== 0)
     }
 
-    if (pathParts.length !== 2) {
+    if (pathParts.length < 2 && pathParts.length > 3) {
       throw Error(
-        `You must provide a valid vault and item name. Input: "${itemRequestLine}"`
+        `You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`
       )
     }
 
-    const [vaultQuoted, nameQuoted] = pathParts
+    const [vaultQuoted, nameQuoted, fieldQuoted] = pathParts
     const vault = vaultQuoted.replace(new RegExp('"', 'g'), '')
     const name = nameQuoted.replace(new RegExp('"', 'g'), '')
+    if (fieldQuoted) {
+      field = fieldQuoted.replace(new RegExp('"', 'g'), '')
+    }
 
     if (!outputName) {
-      outputName = normalizeOutputName(name)
+      outputName = normalizeOutputName(name).toLowerCase()
     } else {
       outputName = normalizeOutputName(outputName)
+      outputOverriden = true
     }
 
     output.push({
       vault,
       name,
-      outputName
+      field,
+      outputName,
+      outputOverriden
     })
   }
 
@@ -80,5 +90,4 @@ function normalizeOutputName(dataKey: string): string {
     .replace(' ', '_')
     .replace('.', '_')
     .replace(/[^\p{L}\p{N}_-]/gu, '')
-    .toLowerCase()
 }

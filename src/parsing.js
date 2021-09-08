@@ -17,6 +17,8 @@ function parseItemRequestsInput(itemInput) {
         var itemRequestLine = itemRequestLines_1[_i];
         var pathSpec = itemRequestLine;
         var outputName = null;
+        var field = null;
+        var outputOverriden = false;
         var renameSigilIndex = itemRequestLine.lastIndexOf('|');
         if (renameSigilIndex > -1) {
             pathSpec = itemRequestLine.substring(0, renameSigilIndex).trim();
@@ -40,22 +42,28 @@ function parseItemRequestsInput(itemInput) {
                 .map(function (part) { return part.trim(); })
                 .filter(function (part) { return part.length !== 0; });
         }
-        if (pathParts.length !== 2) {
-            throw Error("You must provide a valid vault and item name. Input: \"" + itemRequestLine + "\"");
+        if (pathParts.length < 2 && pathParts.length > 3) {
+            throw Error("You must provide a valid vault and item name. A field sector is optional. Input: \"" + itemRequestLine + "\"");
         }
-        var vaultQuoted = pathParts[0], nameQuoted = pathParts[1];
+        var vaultQuoted = pathParts[0], nameQuoted = pathParts[1], fieldQuoted = pathParts[2];
         var vault = vaultQuoted.replace(new RegExp('"', 'g'), '');
         var name_1 = nameQuoted.replace(new RegExp('"', 'g'), '');
+        if (fieldQuoted) {
+            field = fieldQuoted.replace(new RegExp('"', 'g'), '');
+        }
         if (!outputName) {
-            outputName = normalizeOutputName(name_1);
+            outputName = normalizeOutputName(name_1).toLowerCase();
         }
         else {
             outputName = normalizeOutputName(outputName);
+            outputOverriden = true;
         }
         output.push({
             vault: vault,
             name: name_1,
-            outputName: outputName
+            field: field,
+            outputName: outputName,
+            outputOverriden: outputOverriden
         });
     }
     return output;
@@ -65,6 +73,5 @@ function normalizeOutputName(dataKey) {
     return dataKey
         .replace(' ', '_')
         .replace('.', '_')
-        .replace(/[^\p{L}\p{N}_-]/gu, '')
-        .toLowerCase();
+        .replace(/[^\p{L}\p{N}_-]/gu, '');
 }

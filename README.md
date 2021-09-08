@@ -6,14 +6,17 @@ How to use in your workflow:
 
 ```yaml
 - name: Import Creds
-  uses: mcmarkj/1password-actions@v1
+  uses: mcmarkj/1password-actions@v2
   id: creds
   with:
     connect-server-url: <Your 1password Connect Server URL>
     connect-server-token: ${{ secrets.CONNECT_SERVER_TOKEN }}
+    export-env-vars: "true"
     secret-path: |
       vault-name > Vault Secret Name
       vault-name > vault.alt.secretname
+      vault-name > vault.alt.secretname > username
+      vault-name > vault.alt.secretname > username | MY_ENV_VAR_NAME
 ```
 
 You can then utilise these credentials elsewhere in your pipelines
@@ -25,9 +28,10 @@ You can then utilise these credentials elsewhere in your pipelines
   run: gcp cloud connect --key=$SERVICE_ACCOUNT
 ```
 
-You can optionally 
+You can optionally set `export-env-vars: "true"` in your `with` block, this will set the variables as environmental vars globally throughout the following pipeline. 
 
-## Outputs
+
+## Outputs (When not overridden)
 
 All password outputs are marked as secrets so that they're masked in your workflow's logs.
 
@@ -38,7 +42,7 @@ Any additional fields on the secret will also be available, so for example a fie
 
 The output variable's name will be the item's name with spaces and `.` replaced with `_`, non-alphanumeric characters removed, and lowercased. For example, a `Password` item named `Google Firebase 2020` would be available as the `google_firebase_2020_password` output variable.
 
-You can also override the name of the output by appending ` | secret_name` at the end. This will always be suffixed with _<field> however.
+You can also override the name of the output by appending ` | secret_name` at the end. If you've not specified the filed to export, then this will always be suffixed with _<field> for all the available fields.
 eg:
 ```yaml
 secret-path: |
@@ -48,4 +52,16 @@ This could then be accessed by doing:
 ```yaml
 env:
     SERVICE_ACCOUNT: ${{ steps.creds.outputs.my_output_name_password }}
+```
+
+Whereas if you specify the field name:
+
+```yaml
+secret-path: |
+      vault-name > Vault Secret Name > username | my_output_name
+```
+This could then be accessed by doing:
+```yaml
+env:
+    SERVICE_ACCOUNT: ${{ steps.creds.outputs.my_output_name }}
 ```

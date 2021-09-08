@@ -21,12 +21,12 @@ jobs:
             infra-secrets-shared > 1password.github-action-test-secret
       - name: Test ENV Var Set
         run: |
-          if [[ "$MY_TEST_USERNAME" != "THIS_IS_the_USERNAME" ]]; then echo "Username is correct" && exit 1; fi
+          if [[ "$MY_TEST_USERNAME" != "THIS_IS_the_USERNAME" ]]; then echo "Username is not correct" && exit 1; fi
       - name: Test SECRET_NAME_username Var Set
         run: |
-          if [[ "$SECRET_NAME_username" != "THIS_IS_the_USERNAME" ]]; then echo "Username is correct" && exit 1; fi
+          if [[ "$SECRET_NAME_username" != "THIS_IS_the_USERNAME" ]]; then echo "Username is not correct" && exit 1; fi
       - name: Test Accessing via Env Block
         env:
-          TOKEN: ${{ steps.creds.outputs.1password_github-action-test-secret_token }}
+          TOKEN: ${{ steps.creds.outputs.SECRET_NAME_token }}
         run: |
-          if [[ "$TOKEN" != "A_token_Exists" ]]; then echo "Token is correct" && exit 1; fi
+          if [[ "$TOKEN" != "A_token_Exists" ]]; then echo "Token is not correct" && exit 1; fi

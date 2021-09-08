@@ -25,6 +25,8 @@ You can then utilise these credentials elsewhere in your pipelines
   run: gcp cloud connect --key=$SERVICE_ACCOUNT
 ```
 
+You can optionally 
+
 ## Outputs
 
 All password outputs are marked as secrets so that they're masked in your workflow's logs.

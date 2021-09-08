@@ -17,7 +17,6 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
         return vault.id
       }
     }
-    return
   } catch (error) {
     core.setFailed(error.message)
   }
@@ -26,19 +25,59 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
 const getSecret = async (
   vaultID: string,
   secretTitle: string,
-  outputString: string
+  fieldName: string,
+  outputString: string,
+  outputOverriden: boolean
 ): Promise<void> => {
   try {
     const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
 
     const secretFields = vaultItems['fields'] || []
     for (const items of secretFields) {
-      if (items.value != null) {
-        const outputName = `${outputString}_${items.label?.toLowerCase()}`
-        core.setSecret(items.value.toString())
-        core.setOutput(outputName, items.value.toString())
-        core.info(`Secret ready for use: ${outputName}`)
+      if (fieldName && items.label !== fieldName) {
+        continue
       }
+      if (items.value != null) {
+        let outputName = `${outputString}_${items.label?.toLowerCase()}`
+        if (fieldName && outputOverriden) {
+          outputName = outputString
+        }
+        setOutput(outputName, items.value.toString())
+        setEnvironmental(outputName, items.value.toString())
+        if (fieldName) {
+          break
+        }
+      }
+    }
+  } catch (error) {
+    core.setFailed(error.message)
+  }
+}
+
+const setOutput = async (
+  outputName: string,
+  secretValue: string
+): Promise<void> => {
+  try {
+    core.setSecret(secretValue)
+    core.setOutput(outputName, secretValue)
+    core.info(`Secret ready for use: ${outputName}`)
+  } catch (error) {
+    core.setFailed(error.message)
+  }
+}
+
+const setEnvironmental = async (
+  outputName: string,
+  secretValue: string
+): Promise<void> => {
+  try {
+    if (core.getInput('export-env-vars') === 'true') {
+      core.setSecret(secretValue)
+      core.exportVariable(outputName, secretValue)
+      core.info(
+        `Environmental variable globally ready for use in pipeline: ${outputName}`
+      )
     }
   } catch (error) {
     core.setFailed(error.message)
@@ -56,9 +95,17 @@ async function run(): Promise<void> {
       const vaultID = await getVaultID(secretVault)
       // Set the secrets fields
       const secretTitle = itemRequest.name
+      const fieldName = itemRequest.field
       const outputString = itemRequest.outputName
+      const outputOverriden = itemRequest.outputOverriden
       if (vaultID !== undefined) {
-        getSecret(vaultID, secretTitle, outputString)
+        getSecret(
+          vaultID,
+          secretTitle,
+          fieldName,
+          outputString,
+          outputOverriden
+        )
       } else {
         core.setFailed("Can't find vault.")
       }

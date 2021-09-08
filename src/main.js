@@ -60,7 +60,7 @@ var getVaultID = function (vaultName) { return __awaiter(void 0, void 0, void 0,
                         return [2 /*return*/, vault.id];
                     }
                 }
-                return [2 /*return*/];
+                return [3 /*break*/, 3];
             case 2:
                 error_1 = _a.sent();
                 core.setFailed(error_1.message);
@@ -69,7 +69,7 @@ var getVaultID = function (vaultName) { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
-var getSecret = function (vaultID, secretTitle, outputString) { return __awaiter(void 0, void 0, void 0, function () {
+var getSecret = function (vaultID, secretTitle, fieldName, outputString, outputOverriden) { return __awaiter(void 0, void 0, void 0, function () {
     var vaultItems, secretFields, _i, secretFields_1, items, outputName, error_2;
     var _a;
     return __generator(this, function (_b) {
@@ -82,11 +82,19 @@ var getSecret = function (vaultID, secretTitle, outputString) { return __awaiter
                 secretFields = vaultItems['fields'] || [];
                 for (_i = 0, secretFields_1 = secretFields; _i < secretFields_1.length; _i++) {
                     items = secretFields_1[_i];
+                    if (fieldName && items.label !== fieldName) {
+                        continue;
+                    }
                     if (items.value != null) {
                         outputName = outputString + "_" + ((_a = items.label) === null || _a === void 0 ? void 0 : _a.toLowerCase());
-                        core.setSecret(items.value.toString());
-                        core.setOutput(outputName, items.value.toString());
-                        core.info("Secret ready for use: " + outputName);
+                        if (fieldName && outputOverriden) {
+                            outputName = outputString;
+                        }
+                        setOutput(outputName, items.value.toString());
+                        setEnvironmental(outputName, items.value.toString());
+                        if (fieldName) {
+                            break;
+                        }
                     }
                 }
                 return [3 /*break*/, 3];
@@ -98,9 +106,37 @@ var getSecret = function (vaultID, secretTitle, outputString) { return __awaiter
         }
     });
 }); };
+var setOutput = function (outputName, secretValue) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        try {
+            core.setSecret(secretValue);
+            core.setOutput(outputName, secretValue);
+            core.info("Secret ready for use: " + outputName);
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+        return [2 /*return*/];
+    });
+}); };
+var setEnvironmental = function (outputName, secretValue) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        try {
+            if (core.getInput('export-env-vars') === 'true') {
+                core.setSecret(secretValue);
+                core.exportVariable(outputName, secretValue);
+                core.info("Environmental variable globally ready for use in pipeline: " + outputName);
+            }
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+        return [2 /*return*/];
+    });
+}); };
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var secretPath, itemRequests, _i, itemRequests_1, itemRequest, secretVault, vaultID, secretTitle, outputString, error_3;
+        var secretPath, itemRequests, _i, itemRequests_1, itemRequest, secretVault, vaultID, secretTitle, fieldName, outputString, outputOverriden, error_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -119,9 +155,11 @@ function run() {
                 case 2:
                     vaultID = _a.sent();
                     secretTitle = itemRequest.name;
+                    fieldName = itemRequest.field;
                     outputString = itemRequest.outputName;
+                    outputOverriden = itemRequest.outputOverriden;
                     if (vaultID !== undefined) {
-                        getSecret(vaultID, secretTitle, outputString);
+                        getSecret(vaultID, secretTitle, fieldName, outputString, outputOverriden);
                     }
                     else {
                         core.setFailed("Can't find vault.");

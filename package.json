@@ -11,7 +11,7 @@
     "lint": "eslint src/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
     "test": "jest",
-    "all": "npm run build && npm run format && npm run lint"
+    "all": "npm run build && npm run format && npm run lint && npm run package"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "@types/istanbul-lib-report": "^3.0.0"
   },
   "devDependencies": {
-    "@1password/connect": "^1.0.5",
+    "@1password/connect": "git@github.com:mcmarkj/connect-sdk-js.git#75722c6d511c97b76da8c99138746ff21585b136",
     "@types/jest": "^26.0.15",
     "@types/node": "^16.10.5",
     "@types/request": "^2.48.5",

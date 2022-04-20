@@ -29,7 +29,7 @@
     "@types/istanbul-lib-report": "^3.0.0"
   },
   "devDependencies": {
-    "@1password/connect": "git@github.com:mcmarkj/connect-sdk-js.git#75722c6d511c97b76da8c99138746ff21585b136",
+    "@1password/connect": "git@github.com:mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9",
     "@types/jest": "^26.0.15",
     "@types/node": "^16.10.5",
     "@types/request": "^2.48.5",

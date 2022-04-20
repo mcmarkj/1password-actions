@@ -32,7 +32,7 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
 
       if (outputName.length < 1) {
         throw Error(
-          `You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`
+          `You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`.toString()
         )
       }
     }
@@ -55,7 +55,7 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
 
     if (pathParts.length < 2 && pathParts.length > 3) {
       throw Error(
-        `You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`
+        `You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`.toString()
       )
     }
 
@@ -64,6 +64,8 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
     const name = nameQuoted.replace(new RegExp('"', 'g'), '')
     if (fieldQuoted) {
       field = fieldQuoted.replace(new RegExp('"', 'g'), '')
+    } else {
+      field = ''
     }
 
     if (!outputName) {

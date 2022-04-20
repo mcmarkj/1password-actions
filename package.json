@@ -1,6 +1,6 @@
 {
   "name": "1password-connect-action",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "Grab 1Password Credentials from Connect API",
   "main": "lib/main.js",

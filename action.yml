@@ -17,4 +17,4 @@ inputs:
     description: 'Export the secrets automatically as environmental variables for the rest of the pipeline'
 runs:
   using: 'node16'
-  main: 'lib/main.js'
+  main: 'dist/index.js'

@@ -18,7 +18,7 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
       }
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
@@ -34,7 +34,7 @@ const getSecret = async (
 
     const secretFields = vaultItems['fields'] || []
     for (const items of secretFields) {
-      if (fieldName && items.label !== fieldName) {
+      if (fieldName !== '' && items.label !== fieldName) {
         continue
       }
       if (items.value != null) {
@@ -50,7 +50,7 @@ const getSecret = async (
       }
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
@@ -61,9 +61,9 @@ const setOutput = async (
   try {
     core.setSecret(secretValue)
     core.setOutput(outputName, secretValue)
-    core.info(`Secret ready for use: ${outputName}`)
+    core.info(`Secret ready for use: ${outputName}`.toString())
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
@@ -76,11 +76,11 @@ const setEnvironmental = async (
       core.setSecret(secretValue)
       core.exportVariable(outputName, secretValue)
       core.info(
-        `Environmental variable globally ready for use in pipeline: ${outputName}`
+        `Environmental variable globally ready for use in pipeline: ${outputName}`.toString()
       )
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
@@ -111,7 +111,7 @@ async function run(): Promise<void> {
       }
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 

@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
+import {retryDecorator} from 'ts-retry-promise'
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({
@@ -115,4 +116,6 @@ async function run(): Promise<void> {
   }
 }
 
-run()
+const retryRun = retryDecorator(run, {retries: 3})
+
+retryRun()

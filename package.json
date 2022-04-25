@@ -27,7 +27,8 @@
   "dependencies": {
     "@1password/connect": "git@github.com:mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9",
     "@actions/core": "^1.6.0",
-    "@types/istanbul-lib-report": "^3.0.0"
+    "@types/istanbul-lib-report": "^3.0.0",
+    "ts-retry-promise": "^0.6.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",

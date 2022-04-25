@@ -5,7 +5,7 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_from":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_id":"@1password/connect@1.0.5","_inBundle":false,"_integrity":"","_location":"/@1password/connect","_phantomChildren":{},"_requested":{"type":"git","raw":"@1password/connect@git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","name":"@1password/connect","escapedName":"@1password%2fconnect","scope":"@1password","rawSpec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","saveSpec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","fetchSpec":"ssh://git@github.com/mcmarkj/connect-sdk-js.git","gitCommittish":"22231009e8160b89e48c1e6920c18db52f34b6e9"},"_requiredBy":["#DEV:/"],"_resolved":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_spec":"@1password/connect@git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"1Password"},"bugs":{"url":"https://github.com/1Password/connect-sdk-js/issues"},"bundleDependencies":false,"dependencies":{"axios":"^0.21.3","debug":"^4.3.1","lodash.clonedeep":"^4.5.0","slugify":"^1.6.5"},"deprecated":false,"description":"JavaScript/Typescript SDK for 1Password Connect","devDependencies":{"@types/debug":"^4.1.5","@types/jest":"^26.0.23","@types/lodash.clonedeep":"^4.5.6","@types/vfile-message":"1.0.1","@typescript-eslint/eslint-plugin":"^4.22.0","@typescript-eslint/parser":"^4.22.0","codecov":"^3.8.2","eslint":"^7.25.0","eslint-config-prettier":"^6.12.0","eslint-plugin-deprecation":"^1.1.0","eslint-plugin-import":"^2.22.1","eslint-plugin-jsdoc":"^30.6.5","eslint-plugin-no-unsanitized":"^3.1.4","eslint-plugin-prefer-arrow":"^1.2.2","eslint-plugin-react":"^7.21.4","eslint-plugin-react-hooks":"^4.1.2","eslint-plugin-unicorn":"^22.0.0","jest":"^26.6.3","nock":"^13.0.4","prettier":"^2.1.2","slugify":"^1.6.5","ts-jest":"^26.5.6","typescript":"^4.0.3"},"files":["dist/"],"homepage":"https://1password.com/secrets/","license":"MIT","main":"dist/index.js","name":"@1password/connect","prettier":"./prettierrc.json","repository":{"type":"git","url":"git+https://github.com/1Password/connect-sdk-js.git"},"scripts":{"build":"tsc","lint":"eslint --ext .ts","prepare":"npm run build","prepublishOnly":"npm run test && npm run lint","test":"jest","test:coverage":"npx jest --ci --coverage"},"version":"1.0.5"}');
+module.exports = JSON.parse('{"_args":[["git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","/Users/markmcwhirter/Documents/glean/1password-actions"]],"_from":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_id":"@1password/connect@git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_inBundle":false,"_integrity":"","_location":"/@1password/connect","_phantomChildren":{},"_requested":{"type":"git","raw":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","rawSpec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","saveSpec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","fetchSpec":"ssh://git@github.com/mcmarkj/connect-sdk-js.git","gitCommittish":"22231009e8160b89e48c1e6920c18db52f34b6e9"},"_requiredBy":["/"],"_resolved":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_spec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"1Password"},"bugs":{"url":"https://github.com/1Password/connect-sdk-js/issues"},"dependencies":{"axios":"^0.21.3","debug":"^4.3.1","lodash.clonedeep":"^4.5.0","slugify":"^1.6.5"},"description":"JavaScript/Typescript SDK for 1Password Connect","devDependencies":{"@types/debug":"^4.1.5","@types/jest":"^26.0.23","@types/lodash.clonedeep":"^4.5.6","@types/vfile-message":"1.0.1","@typescript-eslint/eslint-plugin":"^4.22.0","@typescript-eslint/parser":"^4.22.0","codecov":"^3.8.2","eslint":"^7.25.0","eslint-config-prettier":"^6.12.0","eslint-plugin-deprecation":"^1.1.0","eslint-plugin-import":"^2.22.1","eslint-plugin-jsdoc":"^30.6.5","eslint-plugin-no-unsanitized":"^3.1.4","eslint-plugin-prefer-arrow":"^1.2.2","eslint-plugin-react":"^7.21.4","eslint-plugin-react-hooks":"^4.1.2","eslint-plugin-unicorn":"^22.0.0","jest":"^26.6.3","nock":"^13.0.4","prettier":"^2.1.2","slugify":"^1.6.5","ts-jest":"^26.5.6","typescript":"^4.0.3"},"files":["dist/"],"homepage":"https://1password.com/secrets/","license":"MIT","main":"dist/index.js","name":"@1password/connect","prettier":"./prettierrc.json","repository":{"type":"git","url":"git+https://github.com/1Password/connect-sdk-js.git"},"scripts":{"build":"tsc","lint":"eslint --ext .ts","prepare":"npm run build","prepublishOnly":"npm run test && npm run lint","test":"jest","test:coverage":"npx jest --ci --coverage"},"version":"1.0.5"}');
 
 /***/ }),
 
@@ -50,6 +50,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const connect_1 = __nccwpck_require__(9379);
 const parsing = __importStar(__nccwpck_require__(7791));
+const ts_retry_promise_1 = __nccwpck_require__(8711);
 // Create new connector with HTTP Pooling
 const op = (0, connect_1.OnePasswordConnect)({
     serverURL: core.getInput('connect-server-url'),
@@ -150,7 +151,8 @@ function run() {
         }
     });
 }
-run();
+const retryRun = (0, ts_retry_promise_1.retryDecorator)(run, { retries: 3 });
+retryRun();
 
 
 /***/ }),
@@ -9066,6 +9068,257 @@ module.exports = {
 
 /***/ }),
 
+/***/ 8711:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NotRetryableError = exports.RetryError = exports.notEmpty = exports.customizeRetry = exports.customizeDecorator = exports.retryDecorator = exports.retry = exports.wait = exports.defaultRetryConfig = void 0;
+var timeout_1 = __nccwpck_require__(22);
+var fixedBackoff = function (attempt, delay) { return delay; };
+var linearBackoff = function (attempt, delay) { return attempt * delay; };
+var exponentialBackoff = function (attempt, delay) { return Math.pow(delay, attempt); };
+exports.defaultRetryConfig = {
+    backoff: "FIXED",
+    delay: 100,
+    logger: function () { return undefined; },
+    maxBackOff: 5 * 60 * 1000,
+    retries: 10,
+    timeout: 60 * 1000,
+    until: function () { return true; },
+};
+function wait(ms) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, ms); })];
+        });
+    });
+}
+exports.wait = wait;
+function retry(f, config) {
+    return __awaiter(this, void 0, void 0, function () {
+        var effectiveConfig;
+        return __generator(this, function (_a) {
+            effectiveConfig = Object.assign({}, exports.defaultRetryConfig, config);
+            return [2 /*return*/, timeout_1.timeout(effectiveConfig.timeout, function (done) { return _retry(f, effectiveConfig, done); })];
+        });
+    });
+}
+exports.retry = retry;
+function retryDecorator(func, config) {
+    return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        return retry(function () { return func.apply(void 0, args); }, config);
+    };
+}
+exports.retryDecorator = retryDecorator;
+function customizeDecorator(customConfig) {
+    return function (args, config) { return retryDecorator(args, Object.assign({}, customConfig, config)); };
+}
+exports.customizeDecorator = customizeDecorator;
+// tslint:disable-next-line
+function customizeRetry(customConfig) {
+    return function (f, c) {
+        var customized = Object.assign({}, customConfig, c);
+        return retry(f, customized);
+    };
+}
+exports.customizeRetry = customizeRetry;
+function _retry(f, config, done) {
+    return __awaiter(this, void 0, void 0, function () {
+        var lastError, delay, retries, i, result, error_1, millisToWait;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    switch (config.backoff) {
+                        case "EXPONENTIAL":
+                            delay = exponentialBackoff;
+                            break;
+                        case "FIXED":
+                            delay = fixedBackoff;
+                            break;
+                        case "LINEAR":
+                            delay = linearBackoff;
+                            break;
+                        default:
+                            delay = config.backoff;
+                    }
+                    if (config.retries === "INFINITELY") {
+                        retries = Number.MAX_SAFE_INTEGER;
+                    }
+                    else {
+                        retries = config.retries;
+                    }
+                    i = 0;
+                    _a.label = 1;
+                case 1:
+                    if (!(i <= retries)) return [3 /*break*/, 8];
+                    _a.label = 2;
+                case 2:
+                    _a.trys.push([2, 4, , 5]);
+                    return [4 /*yield*/, f()];
+                case 3:
+                    result = _a.sent();
+                    if (config.until(result)) {
+                        return [2 /*return*/, result];
+                    }
+                    config.logger("Until condition not met by " + result);
+                    return [3 /*break*/, 5];
+                case 4:
+                    error_1 = _a.sent();
+                    if (error_1.name === NotRetryableError.name) {
+                        throw new RetryError("Met not retryable error. Last error: " + error_1, error_1);
+                    }
+                    lastError = error_1;
+                    config.logger("Retry failed: " + error_1.message);
+                    return [3 /*break*/, 5];
+                case 5:
+                    millisToWait = delay(i + 1, config.delay);
+                    return [4 /*yield*/, wait(millisToWait > config.maxBackOff ? config.maxBackOff : millisToWait)];
+                case 6:
+                    _a.sent();
+                    if (done()) {
+                        return [3 /*break*/, 8];
+                    }
+                    _a.label = 7;
+                case 7:
+                    i++;
+                    return [3 /*break*/, 1];
+                case 8: throw new RetryError("All retries failed. Last error: " + lastError, lastError);
+            }
+        });
+    });
+}
+exports.notEmpty = function (result) {
+    if (Array.isArray(result)) {
+        return result.length > 0;
+    }
+    return result !== null && result !== undefined;
+};
+var RetryError = /** @class */ (function (_super) {
+    __extends(RetryError, _super);
+    /*  istanbul ignore next  */
+    function RetryError(message, lastError) {
+        var _this = _super.call(this, message) || this;
+        _this.lastError = lastError;
+        return _this;
+    }
+    return RetryError;
+}(Error));
+exports.RetryError = RetryError;
+// tslint:disable-next-line:max-classes-per-file
+var BaseError = /** @class */ (function () {
+    function BaseError() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        Error.apply(this, args);
+    }
+    return BaseError;
+}());
+BaseError.prototype = new Error();
+// tslint:disable-next-line:max-classes-per-file
+var NotRetryableError = /** @class */ (function (_super) {
+    __extends(NotRetryableError, _super);
+    function NotRetryableError(message) {
+        var _this = _super.call(this, message) || this;
+        Object.defineProperty(_this, 'name', { value: _this.constructor.name });
+        return _this;
+    }
+    return NotRetryableError;
+}(BaseError));
+exports.NotRetryableError = NotRetryableError;
+//# sourceMappingURL=retry-promise.js.map
+
+/***/ }),
+
+/***/ 22:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.timeout = void 0;
+exports.timeout = function (millies, f) {
+    if (millies === "INFINITELY") {
+        return f(function () { return false; });
+    }
+    var done = false;
+    var doneF = function () { return done; };
+    return new Promise(function (resolve, reject) {
+        var timeoutRef = setTimeout(function () {
+            done = true;
+            reject(new Error("Timeout after " + millies + "ms"));
+        }, millies);
+        var result = f(doneF);
+        // result.finally(() => clearTimeout(timeoutRef));
+        result.then(function (r) {
+            resolve(r);
+            clearTimeout(timeoutRef);
+        }, function (e) {
+            reject(e);
+            clearTimeout(timeoutRef);
+        });
+    });
+};
+//# sourceMappingURL=timeout.js.map
+
+/***/ }),
+
 /***/ 4294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -9350,7 +9603,7 @@ exports.debug = debug; // for test
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_args":[["axios@0.21.4","/Users/markmcwhirter/Documents/glean/1password-actions"]],"_development":true,"_from":"axios@0.21.4","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"axios@0.21.4","name":"axios","escapedName":"axios","rawSpec":"0.21.4","saveSpec":null,"fetchSpec":"0.21.4"},"_requiredBy":["/@1password/connect"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_spec":"0.21.4","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
+module.exports = JSON.parse('{"_args":[["axios@0.21.4","/Users/markmcwhirter/Documents/glean/1password-actions"]],"_from":"axios@0.21.4","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"axios@0.21.4","name":"axios","escapedName":"axios","rawSpec":"0.21.4","saveSpec":null,"fetchSpec":"0.21.4"},"_requiredBy":["/@1password/connect"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_spec":"0.21.4","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
 
 /***/ }),
 

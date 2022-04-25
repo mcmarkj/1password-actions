@@ -17,9 +17,6 @@ jobs:
           export-env-vars: "true"
           retries: 3
           secret-path: |
-            infra-secrets-shared > 1password.github-action-test-secret > username | MY_TEST_USERNAME
-            infra-secrets-shared > 1password.github-action-test-secret | SECRET_NAME
-            infra-secrets-shared > 1password.github-action-test-secret
             infra-secrets-shared > 1password.github-actin-test-secret
       - name: Test ENV Var Set
         run: |

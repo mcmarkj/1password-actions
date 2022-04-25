@@ -15,6 +15,10 @@ inputs:
     required: false
     default: "false"
     description: 'Export the secrets automatically as environmental variables for the rest of the pipeline'
+  retries:
+    required: false
+    default: "1"
+    description: 'How many times to retry fetching secrets'
 runs:
   using: 'node16'
   main: 'dist/index.js'

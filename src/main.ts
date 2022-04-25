@@ -116,6 +116,8 @@ async function run(): Promise<void> {
   }
 }
 
-const retryRun = retryDecorator(run, {retries: 3})
+const retryRun = retryDecorator(run, {
+  retries: Number(core.getInput('retries'))
+})
 
 retryRun()

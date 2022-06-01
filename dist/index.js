@@ -5,7 +5,7 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_from":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_id":"@1password/connect@1.0.5","_inBundle":false,"_integrity":"","_location":"/@1password/connect","_phantomChildren":{},"_requested":{"type":"git","raw":"@1password/connect@git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","name":"@1password/connect","escapedName":"@1password%2fconnect","scope":"@1password","rawSpec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","saveSpec":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","fetchSpec":"ssh://git@github.com/mcmarkj/connect-sdk-js.git","gitCommittish":"22231009e8160b89e48c1e6920c18db52f34b6e9"},"_requiredBy":["#DEV:/"],"_resolved":"git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_spec":"@1password/connect@git+ssh://git@github.com/mcmarkj/connect-sdk-js.git#22231009e8160b89e48c1e6920c18db52f34b6e9","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"1Password"},"bugs":{"url":"https://github.com/1Password/connect-sdk-js/issues"},"bundleDependencies":false,"dependencies":{"axios":"^0.21.3","debug":"^4.3.1","lodash.clonedeep":"^4.5.0","slugify":"^1.6.5"},"deprecated":false,"description":"JavaScript/Typescript SDK for 1Password Connect","devDependencies":{"@types/debug":"^4.1.5","@types/jest":"^26.0.23","@types/lodash.clonedeep":"^4.5.6","@types/vfile-message":"1.0.1","@typescript-eslint/eslint-plugin":"^4.22.0","@typescript-eslint/parser":"^4.22.0","codecov":"^3.8.2","eslint":"^7.25.0","eslint-config-prettier":"^6.12.0","eslint-plugin-deprecation":"^1.1.0","eslint-plugin-import":"^2.22.1","eslint-plugin-jsdoc":"^30.6.5","eslint-plugin-no-unsanitized":"^3.1.4","eslint-plugin-prefer-arrow":"^1.2.2","eslint-plugin-react":"^7.21.4","eslint-plugin-react-hooks":"^4.1.2","eslint-plugin-unicorn":"^22.0.0","jest":"^26.6.3","nock":"^13.0.4","prettier":"^2.1.2","slugify":"^1.6.5","ts-jest":"^26.5.6","typescript":"^4.0.3"},"files":["dist/"],"homepage":"https://1password.com/secrets/","license":"MIT","main":"dist/index.js","name":"@1password/connect","prettier":"./prettierrc.json","repository":{"type":"git","url":"git+https://github.com/1Password/connect-sdk-js.git"},"scripts":{"build":"tsc","lint":"eslint --ext .ts","prepare":"npm run build","prepublishOnly":"npm run test && npm run lint","test":"jest","test:coverage":"npx jest --ci --coverage"},"version":"1.0.5"}');
+module.exports = JSON.parse('{"_from":"@1password/connect@1.1.0","_id":"@1password/connect@1.1.0","_inBundle":false,"_integrity":"sha512-GB/naW01nqr6ZVvOcSHwn30QZpTbBUX9c74teR8DrokkVXM6ZVD30Fhgfv4cewqwKDr03Jo4CQZ+3Z2+KajBDQ==","_location":"/@1password/connect","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"@1password/connect@1.1.0","name":"@1password/connect","escapedName":"@1password%2fconnect","scope":"@1password","rawSpec":"1.1.0","saveSpec":null,"fetchSpec":"1.1.0"},"_requiredBy":["/"],"_resolved":"https://registry.npmjs.org/@1password/connect/-/connect-1.1.0.tgz","_shasum":"64d22e3db288646dce3f45a369b5bc161d6bf0f8","_spec":"@1password/connect@1.1.0","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"1Password"},"bugs":{"url":"https://github.com/1Password/connect-sdk-js/issues"},"bundleDependencies":false,"dependencies":{"axios":"^0.21.3","debug":"^4.3.1","lodash.clonedeep":"^4.5.0","slugify":"^1.6.5"},"deprecated":false,"description":"JavaScript/Typescript SDK for 1Password Connect","devDependencies":{"@types/debug":"^4.1.5","@types/jest":"^26.0.23","@types/lodash.clonedeep":"^4.5.6","@types/vfile-message":"1.0.1","@typescript-eslint/eslint-plugin":"^4.22.0","@typescript-eslint/parser":"^4.22.0","codecov":"^3.8.2","eslint":"^7.25.0","eslint-config-prettier":"^6.12.0","eslint-plugin-deprecation":"^1.1.0","eslint-plugin-import":"^2.22.1","eslint-plugin-jsdoc":"^30.6.5","eslint-plugin-no-unsanitized":"^3.1.4","eslint-plugin-prefer-arrow":"^1.2.2","eslint-plugin-react":"^7.21.4","eslint-plugin-react-hooks":"^4.1.2","eslint-plugin-unicorn":"^22.0.0","jest":"^26.6.3","nock":"^13.0.4","prettier":"^2.1.2","slugify":"^1.6.5","ts-jest":"^26.5.6","typescript":"^4.0.3"},"files":["dist/"],"homepage":"https://1password.com/secrets/","license":"MIT","main":"dist/index.js","name":"@1password/connect","prettier":"./prettierrc.json","repository":{"type":"git","url":"git+https://github.com/1Password/connect-sdk-js.git"},"scripts":{"build":"tsc","lint":"eslint --ext .ts","prepare":"npm run build","prepublishOnly":"npm run test && npm run lint","test":"jest","test:coverage":"npx jest --ci --coverage"},"version":"1.1.0"}');
 
 /***/ }),
 
@@ -374,23 +374,20 @@ class ItemBuilder {
      * @returns {ItemBuilder}
      */
     addField(opts = {}) {
+        if (opts.generate && !validRecipe(opts.recipe)) {
+            throw TypeError(`Field '${opts.label}' contains an invalid Recipe.`);
+        }
         const field = {
             type: opts.type || models_1.FullItemAllOfFields.TypeEnum.String,
             purpose: opts.purpose || models_1.FullItemAllOfFields.PurposeEnum.Empty,
             label: opts.label,
             value: opts.value,
             generate: opts.generate || false,
-            recipe: opts.generate ? {
-                length: opts.recipe.length,
-                characterSets: [...new Set(opts.recipe.characterSets)]
-            } : undefined,
+            recipe: opts.generate && opts.recipe ? generatorRecipeFromConfig(opts.recipe) : undefined
         };
         if (opts.sectionName) {
             const { id: sectionId } = this.getOrCreateSection(opts.sectionName);
             field.section = { id: sectionId };
-        }
-        if (opts.generate && !validRecipe(opts.recipe)) {
-            throw TypeError(`Field '${opts.label}' contains an invalid Recipe.`);
         }
         this.item.fields.push(field);
         return this;
@@ -471,6 +468,17 @@ class ItemBuilder {
     }
 }
 exports.ItemBuilder = ItemBuilder;
+/**
+ * Creates a well-formed GeneratorRecipe from the provided options.
+ * Namely, it removes duplicate values from the character set definitions.
+ * @param {Partial<GeneratorRecipe>} opts
+ * @return {GeneratorRecipe}
+ */
+const generatorRecipeFromConfig = (opts) => {
+    // excluded character setting cannot contain duplicate entries
+    const excludeCharacters = [...new Set(opts.excludeCharacters)].reduce((acc, curr) => acc + curr, "");
+    return Object.assign(Object.assign({}, opts), { characterSets: [...new Set(opts.characterSets)], excludeCharacters });
+};
 /**
  * Evaluate Recipe parameters against allowed values.
  *
@@ -1403,6 +1411,11 @@ GeneratorRecipe.attributeTypeMap = [
         "name": "characterSets",
         "baseName": "characterSets",
         "type": "Array<GeneratorRecipe.CharacterSetsEnum>"
+    },
+    {
+        "name": "excludeCharacters",
+        "baseName": "excludeCharacters",
+        "type": "string"
     }
 ];
 (function (GeneratorRecipe) {
@@ -6609,25 +6622,30 @@ RedirectableRequest.prototype._performRequest = function () {
   // If specified, use the agent corresponding to the protocol
   // (HTTP and HTTPS use different types of agents)
   if (this._options.agents) {
-    var scheme = protocol.substr(0, protocol.length - 1);
+    var scheme = protocol.slice(0, -1);
     this._options.agent = this._options.agents[scheme];
   }
 
-  // Create the native request
+  // Create the native request and set up its event handlers
   var request = this._currentRequest =
         nativeProtocol.request(this._options, this._onNativeResponse);
-  this._currentUrl = url.format(this._options);
-
-  // Set up event handlers
   request._redirectable = this;
-  for (var e = 0; e < events.length; e++) {
-    request.on(events[e], eventHandlers[events[e]]);
+  for (var event of events) {
+    request.on(event, eventHandlers[event]);
   }
+
+  // RFC7230§5.3.1: When making a request directly to an origin server, […]
+  // a client MUST send only the absolute path […] as the request-target.
+  this._currentUrl = /^\//.test(this._options.path) ?
+    url.format(this._options) :
+    // When making a request to a proxy, […]
+    // a client MUST send the target URI in absolute-form […].
+    this._currentUrl = this._options.path;
 
   // End a redirected request
   // (The first request must be ended explicitly with RedirectableRequest#end)
   if (this._isRedirect) {
-    // Write the request entity and end.
+    // Write the request entity and end
     var i = 0;
     var self = this;
     var buffers = this._requestBodyBuffers;
@@ -6701,10 +6719,21 @@ RedirectableRequest.prototype._processResponse = function (response) {
     return;
   }
 
+  // Store the request headers if applicable
+  var requestHeaders;
+  var beforeRedirect = this._options.beforeRedirect;
+  if (beforeRedirect) {
+    requestHeaders = Object.assign({
+      // The Host header was set by nativeProtocol.request
+      Host: response.req.getHeader("host"),
+    }, this._options.headers);
+  }
+
   // RFC7231§6.4: Automatic redirection needs to done with
   // care for methods not known to be safe, […]
   // RFC7231§6.4.2–3: For historical reasons, a user agent MAY change
   // the request method from POST to GET for the subsequent request.
+  var method = this._options.method;
   if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" ||
       // RFC7231§6.4.4: The 303 (See Other) status code indicates that
       // the server is redirecting the user agent to a different resource […]
@@ -6752,10 +6781,18 @@ RedirectableRequest.prototype._processResponse = function (response) {
   }
 
   // Evaluate the beforeRedirect callback
-  if (typeof this._options.beforeRedirect === "function") {
-    var responseDetails = { headers: response.headers };
+  if (typeof beforeRedirect === "function") {
+    var responseDetails = {
+      headers: response.headers,
+      statusCode: statusCode,
+    };
+    var requestDetails = {
+      url: currentUrl,
+      method: method,
+      headers: requestHeaders,
+    };
     try {
-      this._options.beforeRedirect.call(null, this._options, responseDetails);
+      beforeRedirect(this._options, responseDetails, requestDetails);
     }
     catch (err) {
       this.emit("error", err);
@@ -6896,8 +6933,8 @@ function createErrorType(code, defaultMessage) {
 }
 
 function abortRequest(request) {
-  for (var e = 0; e < events.length; e++) {
-    request.removeListener(events[e], eventHandlers[events[e]]);
+  for (var event of events) {
+    request.removeListener(event, eventHandlers[event]);
   }
   request.on("error", noop);
   request.abort();
@@ -9350,7 +9387,7 @@ exports.debug = debug; // for test
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_args":[["axios@0.21.4","/Users/markmcwhirter/Documents/glean/1password-actions"]],"_development":true,"_from":"axios@0.21.4","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"axios@0.21.4","name":"axios","escapedName":"axios","rawSpec":"0.21.4","saveSpec":null,"fetchSpec":"0.21.4"},"_requiredBy":["/@1password/connect"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_spec":"0.21.4","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
+module.exports = JSON.parse('{"_args":[["axios@0.21.4","/Users/markmcwhirter/Documents/glean/1password-actions"]],"_from":"axios@0.21.4","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"axios@0.21.4","name":"axios","escapedName":"axios","rawSpec":"0.21.4","saveSpec":null,"fetchSpec":"0.21.4"},"_requiredBy":["/@1password/connect"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_spec":"0.21.4","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
 
 /***/ }),
 

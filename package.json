@@ -1,6 +1,6 @@
 {
   "name": "1password-connect-action",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "description": "Grab 1Password Credentials from Connect API",
   "main": "lib/main.js",
@@ -26,14 +26,15 @@
   "license": "MIT",
   "dependencies": {
     "@1password/connect": "^1.1.0",
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.10.0",
     "@types/istanbul-lib-report": "^3.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
-    "@types/node": "^16.10.5",
     "@types/request": "^2.48.5",
     "@typescript-eslint/parser": "^5.8.1",
+    "@actions/core": "^1.10.0",
+    "@types/node": "^18.11.0",
     "@vercel/ncc": "^0.31.1",
     "eslint": "^7.32.0",
     "eslint-plugin-github": "^4.3.2",

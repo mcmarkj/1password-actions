@@ -5,7 +5,7 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_from":"@1password/connect@1.1.0","_id":"@1password/connect@1.1.0","_inBundle":false,"_integrity":"sha512-GB/naW01nqr6ZVvOcSHwn30QZpTbBUX9c74teR8DrokkVXM6ZVD30Fhgfv4cewqwKDr03Jo4CQZ+3Z2+KajBDQ==","_location":"/@1password/connect","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"@1password/connect@1.1.0","name":"@1password/connect","escapedName":"@1password%2fconnect","scope":"@1password","rawSpec":"1.1.0","saveSpec":null,"fetchSpec":"1.1.0"},"_requiredBy":["/"],"_resolved":"https://registry.npmjs.org/@1password/connect/-/connect-1.1.0.tgz","_shasum":"64d22e3db288646dce3f45a369b5bc161d6bf0f8","_spec":"@1password/connect@1.1.0","_where":"/Users/markmcwhirter/Documents/glean/1password-actions","author":{"name":"1Password"},"bugs":{"url":"https://github.com/1Password/connect-sdk-js/issues"},"bundleDependencies":false,"dependencies":{"axios":"^0.21.3","debug":"^4.3.1","lodash.clonedeep":"^4.5.0","slugify":"^1.6.5"},"deprecated":false,"description":"JavaScript/Typescript SDK for 1Password Connect","devDependencies":{"@types/debug":"^4.1.5","@types/jest":"^26.0.23","@types/lodash.clonedeep":"^4.5.6","@types/vfile-message":"1.0.1","@typescript-eslint/eslint-plugin":"^4.22.0","@typescript-eslint/parser":"^4.22.0","codecov":"^3.8.2","eslint":"^7.25.0","eslint-config-prettier":"^6.12.0","eslint-plugin-deprecation":"^1.1.0","eslint-plugin-import":"^2.22.1","eslint-plugin-jsdoc":"^30.6.5","eslint-plugin-no-unsanitized":"^3.1.4","eslint-plugin-prefer-arrow":"^1.2.2","eslint-plugin-react":"^7.21.4","eslint-plugin-react-hooks":"^4.1.2","eslint-plugin-unicorn":"^22.0.0","jest":"^26.6.3","nock":"^13.0.4","prettier":"^2.1.2","slugify":"^1.6.5","ts-jest":"^26.5.6","typescript":"^4.0.3"},"files":["dist/"],"homepage":"https://1password.com/secrets/","license":"MIT","main":"dist/index.js","name":"@1password/connect","prettier":"./prettierrc.json","repository":{"type":"git","url":"git+https://github.com/1Password/connect-sdk-js.git"},"scripts":{"build":"tsc","lint":"eslint --ext .ts","prepare":"npm run build","prepublishOnly":"npm run test && npm run lint","test":"jest","test:coverage":"npx jest --ci --coverage"},"version":"1.1.0"}');
+module.exports = JSON.parse('{"name":"@1password/connect","version":"1.3.0","homepage":"https://1password.com/secrets/","repository":"https://github.com/1Password/connect-sdk-js","description":"JavaScript/Typescript SDK for 1Password Connect","main":"dist/index.js","files":["dist/"],"scripts":{"prepublishOnly":"npm run test && npm run lint","prepare":"npm run build","test":"jest","test:coverage":"npx jest --ci --coverage","build":"tsc","lint":"eslint --ext .ts","watch":"tsc --watch"},"author":"1Password","license":"MIT","prettier":"./prettierrc.json","devDependencies":{"@types/debug":"^4.1.5","@types/jest":"^26.0.23","@types/lodash.clonedeep":"^4.5.6","@types/vfile-message":"1.0.1","@typescript-eslint/eslint-plugin":"^4.22.0","@typescript-eslint/parser":"^4.22.0","codecov":"^3.8.2","eslint":"^7.25.0","eslint-config-prettier":"^6.12.0","eslint-plugin-deprecation":"^1.1.0","eslint-plugin-import":"^2.22.1","eslint-plugin-jsdoc":"^30.6.5","eslint-plugin-no-unsanitized":"^3.1.4","eslint-plugin-prefer-arrow":"^1.2.2","eslint-plugin-react":"^7.21.4","eslint-plugin-react-hooks":"^4.1.2","eslint-plugin-unicorn":"^22.0.0","jest":"^26.6.3","nock":"^13.0.4","prettier":"^2.1.2","ts-jest":"^26.5.6","typescript":"^4.0.3"},"dependencies":{"axios":"^0.21.3","debug":"^4.3.1","lodash.clonedeep":"^4.5.0","slugify":"^1.6.5","uuid":"^8.3.2"}}');
 
 /***/ }),
 
@@ -274,35 +274,16 @@ Object.defineProperty(exports, "ItemBuilder", ({ enumerable: true, get: function
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ItemBuilder = void 0;
-const crypto = __importStar(__nccwpck_require__(6417));
 const debug_1 = __importDefault(__nccwpck_require__(8237));
 const lodash_clonedeep_1 = __importDefault(__nccwpck_require__(2061));
 const slugify_1 = __importDefault(__nccwpck_require__(9481));
 const models_1 = __nccwpck_require__(1134);
+const utils_1 = __nccwpck_require__(7419);
 const debug = debug_1.default("opconnect:builder");
 class ItemBuilder {
     constructor() {
@@ -460,7 +441,7 @@ class ItemBuilder {
         // Note about Section IDs: these do NOT have to be cryptographically random.
         // Section IDs are only unique within an Item.
         const section = {
-            id: generateSectionId(),
+            id: utils_1.generateSectionId(),
             label: sectionName,
         };
         this.sections.set(normalizedName, section);
@@ -499,15 +480,6 @@ const validRecipe = (recipe) => {
     }
     return true;
 };
-/**
- * Create a sectionID from random bytes.
- *
- * Section IDs do not need to be cryptographically random.
- *
- * @param {number} length
- * @returns {string}
- */
-const generateSectionId = (length) => crypto.randomBytes(length || 13).toString("hex");
 //# sourceMappingURL=builders.js.map
 
 /***/ }),
@@ -618,6 +590,29 @@ exports.HTTPClient = HTTPClient;
 
 /***/ }),
 
+/***/ 465:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ID_PREFIX = exports.ERROR_MESSAGE = void 0;
+exports.ERROR_MESSAGE = {
+    NO_VAULTS_FOUND_BY_TITLE: "No Vaults found with title",
+    MULTIPLE_VAULTS_FOUND_BY_TITLE: "Found multiple Vaults with given title. Provide a more specific Vault title",
+    NO_ITEMS_FOUND_BY_TITLE: "No Items found with title",
+    MULTIPLE_ITEMS_FOUND_BY_TITLE: "Found multiple Items with given title. Provide a more specific Item title",
+    PROVIDE_VAULT_NAME_OR_ID: "Please provide either the vault name or its ID.",
+    PROVIDE_ITEM_NAME_OR_ID: "Please provide either the item name or its ID.",
+    NO_OTP_FOR_THE_ITEM: "No OTP found for the Item",
+};
+exports.ID_PREFIX = {
+    SECTION: "Section_",
+};
+//# sourceMappingURL=constants.js.map
+
+/***/ }),
+
 /***/ 7319:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -653,6 +648,7 @@ exports.newConnectClient = void 0;
 const resources_1 = __nccwpck_require__(5864);
 const client_1 = __nccwpck_require__(6760);
 const requests_1 = __nccwpck_require__(7618);
+const constants_1 = __nccwpck_require__(465);
 /**
  * OnePasswordConnect client factory.
  *
@@ -687,17 +683,57 @@ class OPConnect {
         });
     }
     /**
-     * Get details about a specific vault.
+     * Returns a list of Vaults with a matching Title value.
+     *
+     * The Vault Title must be an exact-match.
+     *
+     * @param {string} vaultTitle
+     * @returns {Promise<Vault[]>}
+     */
+    listVaultsByTitle(vaultTitle) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.vaults.listVaultsByTitle(vaultTitle);
+        });
+    }
+    /**
+     * Get details about a specific vault wih a matching ID or Title value.
      *
      * If the Service Account does not have permission to view the vault, an
      * error is returned.
      *
+     * @param {string} vaultQuery
+     * @returns {Promise<Vault>}
+     */
+    getVault(vaultQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!vaultQuery) {
+                throw new Error(constants_1.ERROR_MESSAGE.PROVIDE_VAULT_NAME_OR_ID);
+            }
+            return this.vaults.getVault(vaultQuery);
+        });
+    }
+    /**
+     * Get details about a specific vault with a matching ID value.
+     *
      * @param {string} vaultId
      * @returns {Promise<Vault>}
      */
-    getVault(vaultId) {
+    getVaultById(vaultId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.vaults.getVault(vaultId);
+            return yield this.vaults.getVaultById(vaultId);
+        });
+    }
+    /**
+     * Get details about a specific vault with a matching Title value.
+     *
+     * The Vault Title must be an exact-match.
+     *
+     * @param {string} vaultTitle
+     * @returns {Promise<Vault>}
+     */
+    getVaultByTitle(vaultTitle) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.vaults.getVaultByTitle(vaultTitle);
         });
     }
     /**
@@ -712,21 +748,61 @@ class OPConnect {
         });
     }
     /**
+     * Returns a list of Items with a matching Title value.
+     *
+     * @param {string} vaultId
+     * @param {string} itemTitle
+     * @returns {Promise<FullItem[]>}
+     */
+    listItemsByTitle(vaultId, itemTitle) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.items.listItemsByTitle(vaultId, itemTitle);
+        });
+    }
+    /**
+     * Returns a list of Items that contain provided string.
+     *
+     *
+     * @param {string} vaultId
+     * @param {string} titleSearchStr
+     * @returns {Promise<FullItem[]>}
+     */
+    listItemsByTitleContains(vaultId, titleSearchStr) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.items.listItemsByTitleContains(vaultId, titleSearchStr);
+        });
+    }
+    /**
      * Get details about a specific Item in a Vault.
+     *
+     * @param {string} vaultId
+     * @param {string} itemQuery
+     * @returns {Promise<FullItem>}
+     */
+    getItem(vaultId, itemQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!itemQuery) {
+                throw new Error(constants_1.ERROR_MESSAGE.PROVIDE_ITEM_NAME_OR_ID);
+            }
+            return this.items.get(vaultId, itemQuery);
+        });
+    }
+    /**
+     * Get details about a specific Item with a matching ID value.
      *
      * @param {string} vaultId
      * @param {string} itemId
      * @returns {Promise<FullItem>}
      */
-    getItem(vaultId, itemId) {
+    getItemById(vaultId, itemId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.items.get(vaultId, { itemId });
+            return this.items.getById(vaultId, itemId);
         });
     }
     /**
-     * Get details about a specific item with a matching Title value.
+     * Get details about a specific Item with a matching Title value.
      *
-     * The Item Title is case-sensitive and must be an exact-match.
+     * The Item Title must be an exact-match.
      *
      * @param {string} vaultId
      * @param {string} title
@@ -734,7 +810,23 @@ class OPConnect {
      */
     getItemByTitle(vaultId, title) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.items.get(vaultId, { title });
+            return this.items.getByTitle(vaultId, title);
+        });
+    }
+    /**
+     * Get Item's OTP.
+     * itemQuery param can be an item's Title or ID.
+     *
+     * If there are more than one OTP field in an item
+     * it always returns the first/main one.
+     *
+     * @param {string} vaultId
+     * @param {string} itemQuery
+     * @returns {Promise<string>}
+     */
+    getItemOTP(vaultId, itemQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.items.getOTP(vaultId, itemQuery);
         });
     }
     /**
@@ -765,16 +857,58 @@ class OPConnect {
         });
     }
     /**
-     * Deletes a single Item matching the given Item ID.
+     * Delete a specific item with a matching ID or Title.
+     *
+     * The Item Title must be an exact-match.
+     *
+     * @param {string} vaultId
+     * @param {string} itemQuery
+     * @returns {Promise<void>}
+     */
+    deleteItem(vaultId, itemQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!itemQuery) {
+                throw new Error(constants_1.ERROR_MESSAGE.PROVIDE_ITEM_NAME_OR_ID);
+            }
+            yield this.items.delete(vaultId, itemQuery);
+        });
+    }
+    /**
+     * Delete a specific item with a matching ID value.
      *
      * @param {string} vaultId
      * @param {string} itemId
      * @returns {Promise<void>}
      */
-    deleteItem(vaultId, itemId) {
+    deleteItemById(vaultId, itemId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.items.delete(vaultId, itemId);
-            return;
+            yield this.items.deleteById(vaultId, itemId);
+        });
+    }
+    /**
+     * Delete a specific item with a matching Title value.
+     *
+     * The Item Title must be an exact-match.
+     *
+     * @param {string} vaultId
+     * @param {string} itemTitle
+     * @returns {Promise<void>}
+     */
+    deleteItemByTitle(vaultId, itemTitle) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.items.deleteByTitle(vaultId, itemTitle);
+        });
+    }
+    /**
+     * Get a list of files an Item contains.
+     *
+     * @param {string} vaultId
+     * @param {string} itemId
+     * @returns {Promise<ItemFile[]>}
+     */
+    listFiles(vaultId, itemId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.items.listFiles(vaultId, itemId);
         });
     }
 }
@@ -868,6 +1002,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Items = exports.Vaults = void 0;
 const models_1 = __nccwpck_require__(1134);
+const utils_1 = __nccwpck_require__(7419);
 class OPResource {
     constructor(adapter) {
         this.adapter = adapter;
@@ -888,6 +1023,18 @@ class Vaults extends OPResource {
         });
     }
     /**
+     * Search for all Vaults with exact match on title.
+     *
+     * @param {string} title
+     * @returns {Promise<Vault[]>}
+     */
+    listVaultsByTitle(title) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { data } = yield this.adapter.sendRequest("get", `${this.basePath}?${utils_1.QueryBuilder.filterByTitle(title)}`);
+            return models_1.ObjectSerializer.deserialize(data, "Array<Vault>");
+        });
+    }
+    /**
      * Fetch basic information about all items in specified Vault
      *
      * @param vaultId
@@ -899,14 +1046,46 @@ class Vaults extends OPResource {
         });
     }
     /**
-     * Get metadata about a single vault
+     * Get metadata about a single vault.
      *
-     * @param vaultId
+     * @param {string} vaultQuery - the Vault's title or ID
      */
-    getVault(vaultId) {
+    getVault(vaultQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (utils_1.isValidId(vaultQuery)) {
+                return this.getVaultById(vaultQuery);
+            }
+            return this.getVaultByTitle(vaultQuery);
+        });
+    }
+    /**
+     * Get metadata about a single vault with the provided ID.
+     *
+     * @param {string} vaultId
+     */
+    getVaultById(vaultId) {
         return __awaiter(this, void 0, void 0, function* () {
             const { data } = yield this.adapter.sendRequest("get", `${this.basePath}/${vaultId}`);
             return models_1.ObjectSerializer.deserialize(data, "Vault");
+        });
+    }
+    /**
+     * Searches for a Vault with exact match on title.
+     * If no Vaults or multiple Vaults with the same title are found, it returns an error.
+     *
+     * @param {string} title
+     * @returns {Promise<Vault>}
+     */
+    getVaultByTitle(title) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const vaults = yield this.listVaultsByTitle(title);
+            if (!(vaults === null || vaults === void 0 ? void 0 : vaults.length)) {
+                return Promise.reject(utils_1.HttpErrorFactory.noVaultsFoundByTitle());
+            }
+            if (vaults.length > 1) {
+                return Promise.reject(utils_1.HttpErrorFactory.multipleVaultsFoundByTitle());
+            }
+            return vaults[0];
         });
     }
 }
@@ -935,58 +1114,290 @@ class Items extends OPResource {
             return models_1.ObjectSerializer.deserialize(data, "FullItem");
         });
     }
-    get(vaultId, opts) {
+    /**
+     * Get details about a specific Item in a Vault.
+     *
+     * @param {string} vaultId
+     * @param {string} itemQuery - the Item's title or ID
+     * @returns {Promise<FullItem>}
+     */
+    get(vaultId, itemQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(opts.itemId || opts.title) || (opts.itemId && opts.title)) {
-                throw TypeError("Items.get() requires itemId or title");
+            if (utils_1.isValidId(itemQuery)) {
+                return this.getById(vaultId, itemQuery);
             }
-            const { data } = opts.itemId
-                ? yield this.getById(vaultId, opts.itemId)
-                : yield this.getByTitle(vaultId, opts.title);
-            return models_1.ObjectSerializer.deserialize(data, "FullItem");
+            return this.getByTitle(vaultId, itemQuery);
         });
     }
-    delete(vaultId, itemId) {
+    /**
+     * Deletes an Item with exact match on Title or ID.
+     *
+     * @param {string} vaultId
+     * @param {string} itemQuery
+     * @returns {Promise<void>}
+     * @private
+     */
+    delete(vaultId, itemQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.adapter.sendRequest("delete", this.basePath(vaultId, itemId));
+            if (utils_1.isValidId(itemQuery)) {
+                return this.deleteById(vaultId, itemQuery);
+            }
+            return this.deleteByTitle(vaultId, itemQuery);
+        });
+    }
+    /**
+     * Deletes an item with exact match on ID.
+     *
+     * @param {string} vaultId
+     * @param {string} itemId
+     * @returns {Promise<void>}
+     * @private
+     */
+    deleteById(vaultId, itemId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.adapter.sendRequest("delete", this.basePath(vaultId, itemId));
         });
     }
     getById(vaultId, itemId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.adapter.sendRequest("get", this.basePath(vaultId, itemId));
+            const { data } = yield this.adapter.sendRequest("get", this.basePath(vaultId, itemId));
+            return models_1.ObjectSerializer.deserialize(data, "FullItem");
         });
     }
     /**
-     * Searches for an Item with a case-sensitive, exact match on title.
+     * Deletes an item with exact match on title.
+     *
+     * @param {string} vaultId
+     * @param {string} title
+     * @returns {Promise<void>}
+     */
+    deleteByTitle(vaultId, title) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const item = yield this.getSimpleItemByTitle(vaultId, title);
+            return this.deleteById(vaultId, item.id);
+        });
+    }
+    /**
+     * Search for all Items with exact match on Title.
+     *
+     * @param {string} vaultId
+     * @param {string} itemTitle
+     * @returns {Promise<FullItem[]>}
+     */
+    listItemsByTitle(vaultId, itemTitle) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { data } = yield this.adapter.sendRequest("get", `${this.basePath(vaultId)}?${utils_1.QueryBuilder.filterByTitle(itemTitle)}`);
+            return Promise.all(data.map(item => this.getById(vaultId, item.id)));
+        });
+    }
+    /**
+     * Search for the Items in which the Title contains a provided string.
+     *
+     * @param {string} vaultId
+     * @param {string} titleSearchStr
+     * @returns {Promise<FullItem[]>}
+     */
+    listItemsByTitleContains(vaultId, titleSearchStr) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { data } = yield this.adapter.sendRequest("get", `${this.basePath(vaultId)}?${utils_1.QueryBuilder.searchByTitle(titleSearchStr)}`);
+            return Promise.all(data.map((item) => this.getById(vaultId, item.id)));
+        });
+    }
+    /**
+     * Searches for an Item with exact match on title.
      * If found, queries for complete item details and returns result.
      *
      * @param {string} vaultId
      * @param {string} title
      * @returns {Promise<FullItem>}
-     * @private
      */
     getByTitle(vaultId, title) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryPath = `${this.basePath(vaultId)}?filter=title eq "${title}"`;
+            const item = yield this.getSimpleItemByTitle(vaultId, title);
+            return this.getById(item.vault.id, item.id);
+        });
+    }
+    getSimpleItemByTitle(vaultId, title) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queryPath = `${this.basePath(vaultId)}?${utils_1.QueryBuilder.filterByTitle(title)}`;
             const { data } = yield this.adapter.sendRequest("get", queryPath);
             if (!(data === null || data === void 0 ? void 0 : data.length)) {
-                return Promise.reject({
-                    status: 404,
-                    message: "No Items found with title",
-                });
+                return Promise.reject(utils_1.HttpErrorFactory.noItemsFoundByTitle());
             }
             if (data.length > 1) {
-                return Promise.reject({
-                    status: 400,
-                    message: "Found multiple Items with given title. Provide a more specific Item title",
-                });
+                return Promise.reject(utils_1.HttpErrorFactory.multipleItemsFoundByTitle());
             }
-            return this.getById(data[0].vault.id, data[0].id);
+            return models_1.ObjectSerializer.deserialize(data[0], "Item");
+        });
+    }
+    /**
+     * Get a list of files an Item contains.
+     *
+     * @param {string} vaultId
+     * @param {string} itemId
+     * @returns {Promise<ItemFile[]>}
+     */
+    listFiles(vaultId, itemId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { data } = yield this.adapter.sendRequest("get", `${this.basePath(vaultId, itemId)}/files`);
+            return models_1.ObjectSerializer.deserialize(data, "Array<ItemFile>");
+        });
+    }
+    /**
+     * Get Item's OTP.
+     * itemQuery param can be an item's Title or ID.
+     *
+     * If there are more than one OTP field in an item
+     * it always returns the first/main one.
+     *
+     * @param {string} vaultId
+     * @param {string} itemQuery
+     * @returns {Promise<string>}
+     */
+    getOTP(vaultId, itemQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const item = yield this.get(vaultId, itemQuery);
+            const otp = item.extractOTP();
+            if (!otp) {
+                throw new Error(utils_1.ErrorMessageFactory.noOTPFoundForItem(item.id));
+            }
+            return otp;
         });
     }
 }
 exports.Items = Items;
 //# sourceMappingURL=resources.js.map
+
+/***/ }),
+
+/***/ 999:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ErrorMessageFactory = exports.HttpErrorFactory = void 0;
+const constants_1 = __nccwpck_require__(465);
+class HttpErrorFactory {
+    static noVaultsFoundByTitle() {
+        return {
+            status: 404,
+            message: constants_1.ERROR_MESSAGE.NO_VAULTS_FOUND_BY_TITLE
+        };
+    }
+    static multipleVaultsFoundByTitle() {
+        return {
+            status: 400,
+            message: constants_1.ERROR_MESSAGE.MULTIPLE_VAULTS_FOUND_BY_TITLE
+        };
+    }
+    static noItemsFoundByTitle() {
+        return {
+            status: 404,
+            message: constants_1.ERROR_MESSAGE.NO_ITEMS_FOUND_BY_TITLE
+        };
+    }
+    static multipleItemsFoundByTitle() {
+        return {
+            status: 400,
+            message: constants_1.ERROR_MESSAGE.MULTIPLE_ITEMS_FOUND_BY_TITLE
+        };
+    }
+}
+exports.HttpErrorFactory = HttpErrorFactory;
+class ErrorMessageFactory {
+    static noOTPFoundForItem(itemId = "") {
+        return `${constants_1.ERROR_MESSAGE.NO_OTP_FOR_THE_ITEM} ${itemId}`;
+    }
+}
+exports.ErrorMessageFactory = ErrorMessageFactory;
+//# sourceMappingURL=error.js.map
+
+/***/ }),
+
+/***/ 5113:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.generateSectionId = exports.isValidSectionId = exports.isValidId = void 0;
+const uuid_1 = __nccwpck_require__(5840);
+const constants_1 = __nccwpck_require__(465);
+const isValidId = (id) => /^[a-z0-9]{26}$/.test(id);
+exports.isValidId = isValidId;
+const isValidSectionId = (sectionId) => sectionId.startsWith(constants_1.ID_PREFIX.SECTION) && exports.isValidId(sectionId.split("_")[1]);
+exports.isValidSectionId = isValidSectionId;
+const idGenerator = (prefix = '') => (length = 26) => `${prefix}${uuid_1.v4().replace(/-/g, "").slice(0, length)}`;
+/**
+ * Create Section id.
+ *
+ * @param {number} length
+ * @returns {string}
+ */
+exports.generateSectionId = idGenerator(constants_1.ID_PREFIX.SECTION);
+//# sourceMappingURL=id.js.map
+
+/***/ }),
+
+/***/ 7419:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QueryBuilder = void 0;
+exports.QueryBuilder = __importStar(__nccwpck_require__(6506));
+__exportStar(__nccwpck_require__(999), exports);
+__exportStar(__nccwpck_require__(5113), exports);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 6506:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.searchByTitle = exports.filterByTitle = exports.FILTER_PARAM = exports.QUERY_PARAM_NAME = void 0;
+exports.QUERY_PARAM_NAME = {
+    FILTER: "filter",
+};
+exports.FILTER_PARAM = {
+    TITLE: "title",
+};
+const eqByTitle = (title) => `${exports.FILTER_PARAM.TITLE} eq "${title}"`;
+const coByTitle = (title) => `${exports.FILTER_PARAM.TITLE} co "${title}"`;
+const buildKeyValuePair = (queryParamName) => (queryParamValue) => `${queryParamName}=${queryParamValue}`;
+const buildFilterQuery = buildKeyValuePair(exports.QUERY_PARAM_NAME.FILTER);
+const filterByTitle = (title) => buildFilterQuery(eqByTitle(title));
+exports.filterByTitle = filterByTitle;
+const searchByTitle = (title) => buildFilterQuery(coByTitle(title));
+exports.searchByTitle = searchByTitle;
+//# sourceMappingURL=query-builder.js.map
 
 /***/ }),
 
@@ -1032,7 +1443,7 @@ ErrorResponse.attributeTypeMap = [
 /***/ }),
 
 /***/ 3540:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -1049,9 +1460,22 @@ ErrorResponse.attributeTypeMap = [
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FullItem = void 0;
+const fullItemAllOfFields_1 = __nccwpck_require__(4679);
 class FullItem {
     static getAttributeTypeMap() {
         return FullItem.attributeTypeMap;
+    }
+    /**
+     * Returns OTP from an Item.
+     *
+     * If there are more than one OTP field in an item
+     * it always returns the first/main one.
+     *
+     * @returns {string}
+     */
+    extractOTP() {
+        var _a, _b;
+        return ((_b = (_a = this.fields) === null || _a === void 0 ? void 0 : _a.find(({ type }) => type === fullItemAllOfFields_1.FullItemAllOfFields.TypeEnum.Otp)) === null || _b === void 0 ? void 0 : _b.otp) || "";
     }
 }
 exports.FullItem = FullItem;
@@ -1126,6 +1550,11 @@ FullItem.attributeTypeMap = [
         "name": "fields",
         "baseName": "fields",
         "type": "Array<FullItemAllOfFields>"
+    },
+    {
+        "name": "files",
+        "baseName": "files",
+        "type": "Array<ItemFile>"
     }
 ];
 (function (FullItem) {
@@ -1268,6 +1697,11 @@ FullItemAllOfFields.attributeTypeMap = [
         "name": "entropy",
         "baseName": "entropy",
         "type": "number"
+    },
+    {
+        "name": "otp",
+        "baseName": "totp",
+        "type": "string"
     }
 ];
 (function (FullItemAllOfFields) {
@@ -1546,6 +1980,56 @@ Item.attributeTypeMap = [
 
 /***/ }),
 
+/***/ 3322:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ItemFile = void 0;
+class ItemFile {
+    static getAttributeTypeMap() {
+        return ItemFile.attributeTypeMap;
+    }
+}
+exports.ItemFile = ItemFile;
+ItemFile.discriminator = undefined;
+ItemFile.attributeTypeMap = [
+    {
+        "name": "id",
+        "baseName": "id",
+        "type": "string",
+    },
+    {
+        "name": "name",
+        "baseName": "name",
+        "type": "string"
+    },
+    {
+        "name": "size",
+        "baseName": "size",
+        "type": "number"
+    },
+    {
+        "name": "content_path",
+        "baseName": "content_path",
+        "type": "string"
+    },
+    {
+        "name": "content",
+        "baseName": "content",
+        "type": "string"
+    },
+    {
+        "name": "section",
+        "baseName": "section",
+        "type": "FullItemAllOfSection"
+    }
+];
+//# sourceMappingURL=itemFile.js.map
+
+/***/ }),
+
 /***/ 5373:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -1572,6 +2056,11 @@ class ItemUrls {
 exports.ItemUrls = ItemUrls;
 ItemUrls.discriminator = undefined;
 ItemUrls.attributeTypeMap = [
+    {
+        "name": "label",
+        "baseName": "label",
+        "type": "string",
+    },
     {
         "name": "primary",
         "baseName": "primary",
@@ -1650,6 +2139,7 @@ __exportStar(__nccwpck_require__(5787), exports);
 __exportStar(__nccwpck_require__(4474), exports);
 __exportStar(__nccwpck_require__(5373), exports);
 __exportStar(__nccwpck_require__(8865), exports);
+__exportStar(__nccwpck_require__(3322), exports);
 __exportStar(__nccwpck_require__(5681), exports);
 const errorResponse_1 = __nccwpck_require__(766);
 const fullItem_1 = __nccwpck_require__(3540);

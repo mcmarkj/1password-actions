@@ -15,6 +15,10 @@ inputs:
     required: false
     default: "false"
     description: 'Export the secrets automatically as environmental variables for the rest of the pipeline'
+  fail-on-not-found:
+    required: false
+    default: "true"
+    description: 'If secrets cannot be found - should the pipeline fail'
 runs:
   using: 'node16'
   main: 'dist/index.js'

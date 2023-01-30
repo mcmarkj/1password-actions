@@ -15,9 +15,10 @@ jobs:
           connect-server-url: ${{ secrets.CONNECT_SERVER_URL }}
           connect-server-token: ${{ secrets.CONNECT_SERVER_TOKEN }}
           export-env-vars: "true"
+          fail-on-not-found: "true"
           secret-path: |
             infra-secrets-shared > 1password.github-action-test-secret > username | MY_TEST_USERNAME
-            infra-secrets-shared > 1password.github-action-test-ssecret > username | MY_TEST_USERNAME
+            infra-secrets-shared > 1password.github-action-test > username | MY_FAIL_TEST_USERNAME
             infra-secrets-shared > 1password.github-action-test-secret | SECRET_NAME
             infra-secrets-shared > 1password.github-action-test-secret
       - name: Test ENV Var Set

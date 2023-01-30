@@ -9,6 +9,8 @@ const op = OnePasswordConnect({
   keepAlive: true
 })
 
+const fail_on_not_found = core.getInput('fail-on-not-found')
+
 const getVaultID = async (vaultName: string): Promise<string | undefined> => {
   try {
     const vaults = await op.listVaults()
@@ -33,6 +35,11 @@ const getSecret = async (
     const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
 
     const secretFields = vaultItems['fields'] || []
+
+    if (fail_on_not_found === 'true' && secretFields.length === 0) {
+      core.setFailed(`Secret ${secretTitle} could not be found!`)
+    }
+
     for (const items of secretFields) {
       if (fieldName !== '' && items.label !== fieldName) {
         continue

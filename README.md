@@ -12,6 +12,7 @@ How to use in your workflow:
     connect-server-url: <Your 1password Connect Server URL>
     connect-server-token: ${{ secrets.CONNECT_SERVER_TOKEN }}
     export-env-vars: "true"
+    fail-on-not-found: "true"
     secret-path: |
       vault-name > Vault Secret Name
       vault-name > vault.alt.secretname

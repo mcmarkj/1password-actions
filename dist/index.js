@@ -59,6 +59,14 @@ const getVaultID = (vaultName) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
+        if (instanceOfHttpError(error)) {
+            if (fail_on_not_found === 'true') {
+                core.setFailed(`🛑 Error for vault: ${vaultName} - ${error.message}`);
+            }
+            else {
+                core.info(`⚠️ Error for vault: ${vaultName} - ${error.message}. Continuing as fail-on-not-found is disabled.`);
+            }
+        }
         if (error instanceof Error)
             core.setFailed(error.message);
     }
@@ -68,9 +76,6 @@ const getSecret = (vaultID, secretTitle, fieldName, outputString, outputOverride
     try {
         const vaultItems = yield op.getItemByTitle(vaultID, secretTitle);
         const secretFields = vaultItems['fields'] || [];
-        if (fail_on_not_found === 'true' && secretFields.length === 0) {
-            core.setFailed(`Secret ${secretTitle} could not be found!`);
-        }
         for (const items of secretFields) {
             if (fieldName !== '' && items.label !== fieldName) {
                 continue;
@@ -89,10 +94,22 @@ const getSecret = (vaultID, secretTitle, fieldName, outputString, outputOverride
         }
     }
     catch (error) {
+        if (instanceOfHttpError(error)) {
+            if (fail_on_not_found === 'true') {
+                core.setFailed(`🛑 Error for secret: ${secretTitle} - ${error.message}`);
+            }
+            else {
+                core.info(`⚠️ Error for secret: ${secretTitle} - ${error.message}. Continuing as fail-on-not-found is disabled.`);
+            }
+        }
         if (error instanceof Error)
             core.setFailed(error.message);
     }
 });
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+function instanceOfHttpError(object) {
+    return Number.isInteger(object.status);
+}
 const setOutput = (outputName, secretValue) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         core.setSecret(secretValue);

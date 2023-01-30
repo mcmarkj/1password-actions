@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
+import {HttpError} from '@1password/connect/dist/lib/utils/error'
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({
@@ -20,6 +21,15 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
       }
     }
   } catch (error) {
+    if (instanceOfHttpError(error)) {
+      if (fail_on_not_found === 'true') {
+        core.setFailed(`🛑 Error for vault: ${vaultName} - ${error.message}`)
+      } else {
+        core.info(
+          `⚠️ Error for vault: ${vaultName} - ${error.message}. Continuing as fail-on-not-found is disabled.`
+        )
+      }
+    }
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
@@ -35,10 +45,6 @@ const getSecret = async (
     const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
 
     const secretFields = vaultItems['fields'] || []
-
-    if (fail_on_not_found === 'true' && secretFields.length === 0) {
-      core.setFailed(`Secret ${secretTitle} could not be found!`)
-    }
 
     for (const items of secretFields) {
       if (fieldName !== '' && items.label !== fieldName) {
@@ -57,8 +63,22 @@ const getSecret = async (
       }
     }
   } catch (error) {
+    if (instanceOfHttpError(error)) {
+      if (fail_on_not_found === 'true') {
+        core.setFailed(`🛑 Error for secret: ${secretTitle} - ${error.message}`)
+      } else {
+        core.info(
+          `⚠️ Error for secret: ${secretTitle} - ${error.message}. Continuing as fail-on-not-found is disabled.`
+        )
+      }
+    }
     if (error instanceof Error) core.setFailed(error.message)
   }
+}
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+function instanceOfHttpError(object: any): object is HttpError {
+  return Number.isInteger(object.status)
 }
 
 const setOutput = async (

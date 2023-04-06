@@ -33,7 +33,7 @@
     "@types/jest": "^29.4.0",
     "@types/request": "^2.48.8",
     "@actions/core": "^1.10.0",
-    "@types/node": "^18.11.0",
+    "@types/node": "^18.15.11",
     "@typescript-eslint/parser": "^5.49.0",
     "@vercel/ncc": "^0.36.1",
     "eslint": "^8.33.0",

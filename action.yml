@@ -20,5 +20,5 @@ inputs:
     default: "true"
     description: 'If secrets cannot be found - should the pipeline fail'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'

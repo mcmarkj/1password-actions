@@ -247,8 +247,8 @@ function parseItemRequestsInput(itemInput) {
 exports.parseItemRequestsInput = parseItemRequestsInput;
 function normalizeOutputName(dataKey) {
     return dataKey
-        .replace(' ', '_')
-        .replace('.', '_')
+        .replace(/\s/g, '_')
+        .replace(/\./g, '_')
         .replace(/[^\p{L}\p{N}_-]/gu, '');
 }
 

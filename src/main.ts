@@ -12,7 +12,6 @@ const op = OnePasswordConnect({
 
 const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
 
-
 const getVaultID = async (vaultName: string): Promise<string | undefined> => {
   try {
     const vaults = await op.listVaults()

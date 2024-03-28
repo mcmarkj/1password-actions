@@ -10,7 +10,8 @@ const op = OnePasswordConnect({
   keepAlive: true
 })
 
-const fail_on_not_found = core.getInput('fail-on-not-found')
+const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
+
 
 const getVaultID = async (vaultName: string): Promise<string | undefined> => {
   try {
@@ -24,11 +25,11 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
     if (fail_on_not_found) {
       core.setFailed(`🛑 No vault matched name '${vaultName}'`)
     } else {
-      core.info(`🛑 No vault matched name '${vaultName}'`)
+      core.info(`⚠️ No vault matched name '${vaultName}'`)
     }
   } catch (error) {
     if (instanceOfHttpError(error)) {
-      if (fail_on_not_found === 'true') {
+      if (fail_on_not_found) {
         core.setFailed(`🛑 Error for vault: ${vaultName} - ${error.message}`)
       } else {
         core.info(
@@ -72,11 +73,11 @@ const getSecret = async (
     if (fail_on_not_found) {
       core.setFailed(`🛑 No secret matched ${secretTitle} with field ${fieldName}`)
     } else {
-      core.info(`🛑 No secret matched ${secretTitle} with field ${fieldName}`)
+      core.info(`⚠️ No secret matched ${secretTitle} with field ${fieldName}`)
     }
   } catch (error) {
     if (instanceOfHttpError(error)) {
-      if (fail_on_not_found === 'true') {
+      if (fail_on_not_found) {
         core.setFailed(`🛑 Error for secret: ${secretTitle} - ${error.message}`)
       } else {
         core.info(

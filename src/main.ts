@@ -29,7 +29,9 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
   } catch (error) {
     if (instanceOfHttpError(error)) {
       if (fail_on_not_found) {
-        core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`)
+        core.setFailed(
+          `🛑 Error for vault: '${vaultName}' - '${error.message}'`
+        )
       } else {
         core.info(
           `⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`
@@ -75,15 +77,21 @@ const getSecret = async (
 
     if (!foundSecret) {
       if (fail_on_not_found) {
-        core.setFailed(`🛑 No secret matched '${secretTitle}' with field '${fieldName}'`)
+        core.setFailed(
+          `🛑 No secret matched '${secretTitle}' with field '${fieldName}'`
+        )
       } else {
-        core.info(`⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`)
+        core.info(
+          `⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`
+        )
       }
     }
   } catch (error) {
     if (instanceOfHttpError(error)) {
       if (fail_on_not_found) {
-        core.setFailed(`🛑 Error for secret: '${secretTitle}' - '${error.message}'`)
+        core.setFailed(
+          `🛑 Error for secret: '${secretTitle}' - '${error.message}'`
+        )
       } else {
         core.info(
           `⚠️ Error for secret: '${secretTitle}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`

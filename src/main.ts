@@ -30,10 +30,10 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
   } catch (error) {
     if (instanceOfHttpError(error)) {
       if (fail_on_not_found) {
-        core.setFailed(`🛑 Error for vault: ${vaultName} - ${error.message}`)
+        core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`)
       } else {
         core.info(
-          `⚠️ Error for vault: ${vaultName} - ${error.message}. Continuing as fail-on-not-found is disabled.`
+          `⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`
         )
       }
     }
@@ -53,6 +53,9 @@ const getSecret = async (
 
     const secretFields = vaultItems['fields'] || []
 
+    // if fieldName wasn't specified, we just output any we find
+    let foundSecret = fieldName === ''
+
     for (const items of secretFields) {
       if (fieldName !== '' && items.label !== fieldName) {
         continue
@@ -64,24 +67,27 @@ const getSecret = async (
         }
         setOutput(outputName, items.value.toString())
         setEnvironmental(outputName, items.value.toString())
+        foundSecret = true
         if (fieldName) {
           break
         }
       }
     }
 
-    if (fail_on_not_found) {
-      core.setFailed(`🛑 No secret matched ${secretTitle} with field ${fieldName}`)
-    } else {
-      core.info(`⚠️ No secret matched ${secretTitle} with field ${fieldName}`)
+    if (!foundSecret) {
+      if (fail_on_not_found) {
+        core.setFailed(`🛑 No secret matched '${secretTitle}' with field '${fieldName}'`)
+      } else {
+        core.info(`⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`)
+      }
     }
   } catch (error) {
     if (instanceOfHttpError(error)) {
       if (fail_on_not_found) {
-        core.setFailed(`🛑 Error for secret: ${secretTitle} - ${error.message}`)
+        core.setFailed(`🛑 Error for secret: '${secretTitle}' - '${error.message}'`)
       } else {
         core.info(
-          `⚠️ Error for secret: ${secretTitle} - ${error.message}. Continuing as fail-on-not-found is disabled.`
+          `⚠️ Error for secret: '${secretTitle}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`
         )
       }
     }
@@ -116,7 +122,7 @@ const setEnvironmental = async (
       core.setSecret(secretValue)
       core.exportVariable(outputName, secretValue)
       core.info(
-        `Environmental variable globally ready for use in pipeline: ${outputName}`.toString()
+        `Environmental variable globally ready for use in pipeline: '${outputName}'`
       )
     }
   } catch (error) {

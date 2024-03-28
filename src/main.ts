@@ -20,6 +20,8 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
         return vault.id
       }
     }
+
+    core.setFailed(`🛑 No vault matched name '${vaultName}'`)
   } catch (error) {
     if (instanceOfHttpError(error)) {
       if (fail_on_not_found === 'true') {
@@ -62,6 +64,8 @@ const getSecret = async (
         }
       }
     }
+
+    core.setFailed(`🛑 No secret matched ${secretTitle} with field ${fieldName}`)
   } catch (error) {
     if (instanceOfHttpError(error)) {
       if (fail_on_not_found === 'true') {

@@ -48,7 +48,7 @@ const op = (0, connect_1.OnePasswordConnect)({
     token: core.getInput('connect-server-token'),
     keepAlive: true
 });
-const fail_on_not_found = core.getInput('fail-on-not-found');
+const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
 const getVaultID = (vaultName) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const vaults = yield op.listVaults();
@@ -57,10 +57,16 @@ const getVaultID = (vaultName) => __awaiter(void 0, void 0, void 0, function* ()
                 return vault.id;
             }
         }
+        if (fail_on_not_found) {
+            core.setFailed(`🛑 No vault matched name '${vaultName}'`);
+        }
+        else {
+            core.info(`⚠️ No vault matched name '${vaultName}'`);
+        }
     }
     catch (error) {
         if (instanceOfHttpError(error)) {
-            if (fail_on_not_found === 'true') {
+            if (fail_on_not_found) {
                 core.setFailed(`🛑 Error for vault: ${vaultName} - ${error.message}`);
             }
             else {
@@ -92,10 +98,16 @@ const getSecret = (vaultID, secretTitle, fieldName, outputString, outputOverride
                 }
             }
         }
+        if (fail_on_not_found) {
+            core.setFailed(`🛑 No secret matched ${secretTitle} with field ${fieldName}`);
+        }
+        else {
+            core.info(`⚠️ No secret matched ${secretTitle} with field ${fieldName}`);
+        }
     }
     catch (error) {
         if (instanceOfHttpError(error)) {
-            if (fail_on_not_found === 'true') {
+            if (fail_on_not_found) {
                 core.setFailed(`🛑 Error for secret: ${secretTitle} - ${error.message}`);
             }
             else {

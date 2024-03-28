@@ -48,7 +48,7 @@ const op = (0, connect_1.OnePasswordConnect)({
     token: core.getInput('connect-server-token'),
     keepAlive: true
 });
-const fail_on_not_found = core.getInput('fail-on-not-found');
+const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
 const getVaultID = (vaultName) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const vaults = yield op.listVaults();
@@ -61,16 +61,16 @@ const getVaultID = (vaultName) => __awaiter(void 0, void 0, void 0, function* ()
             core.setFailed(`🛑 No vault matched name '${vaultName}'`);
         }
         else {
-            core.info(`🛑 No vault matched name '${vaultName}'`);
+            core.info(`⚠️ No vault matched name '${vaultName}'`);
         }
     }
     catch (error) {
         if (instanceOfHttpError(error)) {
-            if (fail_on_not_found === 'true') {
-                core.setFailed(`🛑 Error for vault: ${vaultName} - ${error.message}`);
+            if (fail_on_not_found) {
+                core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`);
             }
             else {
-                core.info(`⚠️ Error for vault: ${vaultName} - ${error.message}. Continuing as fail-on-not-found is disabled.`);
+                core.info(`⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
             }
         }
         if (error instanceof Error)
@@ -82,6 +82,8 @@ const getSecret = (vaultID, secretTitle, fieldName, outputString, outputOverride
     try {
         const vaultItems = yield op.getItemByTitle(vaultID, secretTitle);
         const secretFields = vaultItems['fields'] || [];
+        // if fieldName wasn't specified, we just output any we find
+        let foundSecret = fieldName === '';
         for (const items of secretFields) {
             if (fieldName !== '' && items.label !== fieldName) {
                 continue;
@@ -93,25 +95,28 @@ const getSecret = (vaultID, secretTitle, fieldName, outputString, outputOverride
                 }
                 setOutput(outputName, items.value.toString());
                 setEnvironmental(outputName, items.value.toString());
+                foundSecret = true;
                 if (fieldName) {
                     break;
                 }
             }
         }
-        if (fail_on_not_found) {
-            core.setFailed(`🛑 No secret matched ${secretTitle} with field ${fieldName}`);
-        }
-        else {
-            core.info(`🛑 No secret matched ${secretTitle} with field ${fieldName}`);
+        if (!foundSecret) {
+            if (fail_on_not_found) {
+                core.setFailed(`🛑 No secret matched '${secretTitle}' with field '${fieldName}'`);
+            }
+            else {
+                core.info(`⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`);
+            }
         }
     }
     catch (error) {
         if (instanceOfHttpError(error)) {
-            if (fail_on_not_found === 'true') {
-                core.setFailed(`🛑 Error for secret: ${secretTitle} - ${error.message}`);
+            if (fail_on_not_found) {
+                core.setFailed(`🛑 Error for secret: '${secretTitle}' - '${error.message}'`);
             }
             else {
-                core.info(`⚠️ Error for secret: ${secretTitle} - ${error.message}. Continuing as fail-on-not-found is disabled.`);
+                core.info(`⚠️ Error for secret: '${secretTitle}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
             }
         }
         if (error instanceof Error)
@@ -138,7 +143,7 @@ const setEnvironmental = (outputName, secretValue) => __awaiter(void 0, void 0, 
         if (core.getInput('export-env-vars') === 'true') {
             core.setSecret(secretValue);
             core.exportVariable(outputName, secretValue);
-            core.info(`Environmental variable globally ready for use in pipeline: ${outputName}`.toString());
+            core.info(`Environmental variable globally ready for use in pipeline: '${outputName}'`);
         }
     }
     catch (error) {

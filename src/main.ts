@@ -169,7 +169,7 @@ async function run(): Promise<void> {
       },
       {
         delay: 100,
-        maxTry: 5
+        maxTry: core.getInput('max-retries') ? parseInt(core.getInput('max-retries')) : 3
       }
     )
   } catch (error) {

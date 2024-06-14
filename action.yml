@@ -19,6 +19,10 @@ inputs:
     required: false
     default: "true"
     description: 'If secrets cannot be found - should the pipeline fail'
+  retry-count:
+    required: false
+    default: "3"
+    description: 'Number of times to retry fetching secrets'
 runs:
   using: 'node20'
   main: 'dist/index.js'

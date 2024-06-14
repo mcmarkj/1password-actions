@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
 import {HttpError} from '@1password/connect/dist/lib/utils/error'
+import {isTooManyTries, retry, retryAsync} from 'ts-retry'
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({
@@ -139,31 +140,40 @@ const setEnvironmental = async (
 
 async function run(): Promise<void> {
   try {
-    // Translate the vault path into it's respective segments
-    const secretPath = core.getInput('secret-path')
-    const itemRequests = parsing.parseItemRequestsInput(secretPath)
-    for (const itemRequest of itemRequests) {
-      // Get the vault ID for the vault
-      const secretVault = itemRequest.vault
-      const vaultID = await getVaultID(secretVault)
-      // Set the secrets fields
-      const secretTitle = itemRequest.name
-      const fieldName = itemRequest.field
-      const outputString = itemRequest.outputName
-      const outputOverriden = itemRequest.outputOverriden
-      if (vaultID !== undefined) {
-        getSecret(
-          vaultID,
-          secretTitle,
-          fieldName,
-          outputString,
-          outputOverriden
-        )
-      } else {
-        core.setFailed("Can't find vault.")
+    await retryAsync(
+      async () => {
+        // Translate the vault path into it's respective segments
+        const secretPath = core.getInput('secret-path')
+        const itemRequests = parsing.parseItemRequestsInput(secretPath)
+        for (const itemRequest of itemRequests) {
+          // Get the vault ID for the vault
+          const secretVault = itemRequest.vault
+          const vaultID = await getVaultID(secretVault)
+          // Set the secrets fields
+          const secretTitle = itemRequest.name
+          const fieldName = itemRequest.field
+          const outputString = itemRequest.outputName
+          const outputOverriden = itemRequest.outputOverriden
+          if (vaultID !== undefined) {
+            getSecret(
+              vaultID,
+              secretTitle,
+              fieldName,
+              outputString,
+              outputOverriden
+            )
+          } else {
+            core.setFailed("Can't find vault.")
+          }
+        }
+      },
+      {
+        delay: 100,
+        maxTry: core.getInput('max-retries') ? parseInt(core.getInput('max-retries')) : 3
       }
-    }
+    )
   } catch (error) {
+    if (isTooManyTries(error)) core.setFailed('🛑 Too many retries')
     if (error instanceof Error) core.setFailed(error.message)
   }
 }

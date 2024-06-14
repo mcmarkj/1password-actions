@@ -13,6 +13,7 @@ How to use in your workflow:
     connect-server-token: ${{ secrets.CONNECT_SERVER_TOKEN }}
     export-env-vars: "true"
     fail-on-not-found: "true"
+    retry-count: 1
     secret-path: |
       vault-name > Vault Secret Name
       vault-name > vault.alt.secretname
@@ -30,6 +31,9 @@ You can then utilise these credentials elsewhere in your pipelines
 ```
 
 You can optionally set `export-env-vars: "true"` in your `with` block, this will set the variables as environmental vars globally throughout the following pipeline. 
+
+If your secret is not found, the action will fail by default. You can override this by setting `fail-on-not-found: "false"` in your `with` block.
+You can also set the number of retries for the action to attempt to fetch the secret by setting `retry-count: 3` in your `with` block.
 
 
 ## Outputs (When not overridden)

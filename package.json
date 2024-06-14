@@ -27,7 +27,8 @@
   "dependencies": {
     "@1password/connect": "^1.4.1",
     "@actions/core": "^1.10.1",
-    "@types/istanbul-lib-report": "^3.0.3"
+    "@types/istanbul-lib-report": "^3.0.3",
+    "ts-retry": "^4.2.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

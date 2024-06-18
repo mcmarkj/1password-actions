@@ -34,6 +34,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const connect_1 = __nccwpck_require__(9379);
 const parsing = __importStar(__nccwpck_require__(7791));
 const ts_retry_1 = __nccwpck_require__(2172);
+const tooManyTries_1 = __nccwpck_require__(897);
 // Create new connector with HTTP Pooling
 const op = (0, connect_1.OnePasswordConnect)({
     serverURL: core.getInput('connect-server-url'),
@@ -162,12 +163,17 @@ async function run() {
                     getSecret(vaultID, secretTitle, fieldName, outputString, outputOverriden);
                 }
                 else {
-                    core.setFailed("Can't find vault.");
+                    throw Error("Can't find vault.");
                 }
             }
         }, {
-            delay: 100,
-            maxTry: 5
+            delay: 10000,
+            maxTry: core.getInput('max-retries')
+                ? parseInt(core.getInput('max-retries'))
+                : 3,
+            onMaxRetryFunc: () => {
+                throw new tooManyTries_1.TooManyTries(new Error('🛑 Too many retries'));
+            }
         });
     }
     catch (error) {

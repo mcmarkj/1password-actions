@@ -3,6 +3,7 @@ import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
 import {HttpError} from '@1password/connect/dist/lib/utils/error'
 import {isTooManyTries, retry, retryAsync} from 'ts-retry'
+import {TooManyTries} from 'ts-retry/lib/cjs/retry/tooManyTries'
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({
@@ -163,13 +164,18 @@ async function run(): Promise<void> {
               outputOverriden
             )
           } else {
-            core.setFailed("Can't find vault.")
+            throw Error("Can't find vault.")
           }
         }
       },
       {
-        delay: 100,
-        maxTry: core.getInput('max-retries') ? parseInt(core.getInput('max-retries')) : 3
+        delay: 10000,
+        maxTry: core.getInput('max-retries')
+          ? parseInt(core.getInput('max-retries'))
+          : 3,
+        onMaxRetryFunc: () => {
+          throw new TooManyTries(new Error('🛑 Too many retries'))
+        }
       }
     )
   } catch (error) {

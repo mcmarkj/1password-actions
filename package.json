@@ -35,7 +35,7 @@
     "@types/request": "^2.48.12",
     "@actions/core": "^1.11.1",
     "@types/node": "^22.13.0",
-    "@typescript-eslint/parser": "^8.21.0",
+    "@typescript-eslint/parser": "^8.23.0",
     "@vercel/ncc": "^0.38.3",
     "eslint": "^9.19.0",
     "eslint-plugin-github": "^5.1.7",

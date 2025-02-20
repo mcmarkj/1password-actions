@@ -170,8 +170,8 @@ async function run(): Promise<void> {
       },
       {
         delay: 10000,
-        maxTry: core.getInput('max-retries')
-          ? parseInt(core.getInput('max-retries'))
+        maxTry: core.getInput('retry-count')
+          ? parseInt(core.getInput('retry-count'))
           : 3,
         onMaxRetryFunc: () => {
           throw new TooManyTries(new Error('🛑 Too many retries'))

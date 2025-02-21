@@ -181,6 +181,7 @@ async function run(): Promise<void> {
   } catch (error) {
     if (isTooManyTries(error)) core.setFailed('🛑 Too many retries')
     if (error instanceof Error) core.setFailed(error.message)
+    console.log('Unexpected error: ', error)
   }
 }
 

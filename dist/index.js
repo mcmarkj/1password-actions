@@ -191,10 +191,12 @@ async function run() {
             core.setFailed('🛑 Too many retries');
         if (error instanceof Error)
             core.setFailed(error.message);
-        console.log("Unexpected error: ", error);
+        console.log('Unexpected error: ', error);
     }
 }
-run();
+run().catch(error => {
+    core.setFailed(`Action failed with error: ${error.message}`);
+});
 
 
 /***/ }),

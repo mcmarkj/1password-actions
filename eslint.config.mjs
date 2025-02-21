@@ -16,8 +16,9 @@ const compat = new FlatCompat({
 });
 
 export default [{
-    ignores: ["**/dist/", "**/lib/", "**/node_modules/", "**/jest.config.js"],
-}, ...compat.extends("plugin:github/recommended"), {
+    files: ["src/*.ts"],
+    ignores: ["dist/", "lib/", "node_modules/", "jest.config.js"],
+}, {
     plugins: {
         jest,
         "@typescript-eslint": typescriptEslint,
@@ -60,7 +61,7 @@ export default [{
             allowExpressions: true,
         }],
 
-        "@typescript-eslint/func-call-spacing": ["error", "never"],
+        "@/func-call-spacing": ["error", "never"],
         "@typescript-eslint/no-array-constructor": "error",
         "@typescript-eslint/no-empty-interface": "error",
         "@typescript-eslint/no-explicit-any": "error",
@@ -81,9 +82,7 @@ export default [{
         "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/require-array-sort-compare": "error",
         "@typescript-eslint/restrict-plus-operands": "error",
-        semi: "off",
-        "@typescript-eslint/semi": ["error", "never"],
-        "@typescript-eslint/type-annotation-spacing": "error",
+        "@/semi": ["error", "never"],
         "@typescript-eslint/unbound-method": "error",
     },
 }];

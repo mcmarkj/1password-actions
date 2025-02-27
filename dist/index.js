@@ -55,10 +55,10 @@ const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
 const getVaultID = async (vaultName) => {
     try {
         const vaults = await op.listVaults();
-        core.debug(`getVaultID - vaults: ${JSON.stringify(vaults)}`);
+        core.info(`getVaultID - vaults: ${JSON.stringify(vaults)}`);
         for (const vault of vaults) {
             if (vault.name === vaultName) {
-                core.debug(`getVaultID - found vault: ${JSON.stringify(vault)}`);
+                core.info(`getVaultID - found vault: ${JSON.stringify(vault)}`);
                 return vault.id;
             }
         }
@@ -70,9 +70,9 @@ const getVaultID = async (vaultName) => {
         }
     }
     catch (error) {
-        core.debug(`getVaultID - error: ${JSON.stringify(error)}`);
+        core.info(`getVaultID - error: ${JSON.stringify(error)}`);
         if (instanceOfHttpError(error)) {
-            core.debug(`getVaultID - HTTP error`);
+            core.info(`getVaultID - HTTP error`);
             if (fail_on_not_found) {
                 core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`);
             }
@@ -91,29 +91,29 @@ const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOv
         const secretFields = vaultItems['fields'] || [];
         // if fieldName wasn't specified, we just output any we find
         let foundSecret = fieldName === '';
-        core.debug(`getSecret - foundSecret: ${foundSecret}`);
+        core.info(`getSecret - foundSecret: ${foundSecret}`);
         for (const item of secretFields) {
             if (fieldName !== '' && item.label !== fieldName) {
-                core.debug(`getSecret - skipping field: ${fieldName} - ${item.label}`);
+                core.info(`getSecret - skipping field: ${fieldName} - ${item.label}`);
                 continue;
             }
             if (item.value != null) {
-                core.debug(`getSecret - found field: ${item.label}`);
+                core.info(`getSecret - found field: ${item.label}`);
                 let outputName = `${outputString}_${(_a = item.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
                 if (fieldName && outputOverridden) {
-                    core.debug(`getSecret - overriding output name: ${outputString}`);
+                    core.info(`getSecret - overriding output name: ${outputString}`);
                     outputName = outputString;
                 }
                 setOutput(outputName, item.value.toString());
                 setEnvironmental(outputName, item.value.toString());
                 foundSecret = true;
                 if (fieldName) {
-                    core.debug(`getSecret - found asked for field: ${fieldName}`);
+                    core.info(`getSecret - found asked for field: ${fieldName}`);
                     break;
                 }
             }
             else {
-                core.debug(`getSecret - skipping field as null: ${item.label}`);
+                core.info(`getSecret - skipping field as null: ${item.label}`);
             }
         }
         if (!foundSecret) {
@@ -149,7 +149,7 @@ const setOutput = async (outputName, secretValue) => {
         core.info(`Secret ready for use: ${outputName}`.toString());
     }
     catch (error) {
-        core.debug(`setOutput - error: ${JSON.stringify(error)}`);
+        core.info(`setOutput - error: ${JSON.stringify(error)}`);
         if (error instanceof Error)
             core.setFailed(error.message);
     }
@@ -163,7 +163,7 @@ const setEnvironmental = async (outputName, secretValue) => {
         }
     }
     catch (error) {
-        core.debug(`setEnvironmental - error: ${JSON.stringify(error)}`);
+        core.info(`setEnvironmental - error: ${JSON.stringify(error)}`);
         if (error instanceof Error)
             core.setFailed(error.message);
     }
@@ -171,14 +171,14 @@ const setEnvironmental = async (outputName, secretValue) => {
 async function run() {
     try {
         await (0, ts_retry_1.retryAsync)(async () => {
-            core.debug('Starting 1Password Connect Action');
+            core.info('Starting 1Password Connect Action');
             // Translate the vault path into it's respective segments
             const secretPath = core.getInput('secret-path');
             const itemRequests = parsing.parseItemRequestsInput(secretPath);
-            core.debug(`Vault path: ${secretPath}`);
-            core.debug(`Parsed item requests: ${JSON.stringify(itemRequests)}`);
+            core.info(`Vault path: ${secretPath}`);
+            core.info(`Parsed item requests: ${JSON.stringify(itemRequests)}`);
             for (const itemRequest of itemRequests) {
-                core.debug(`Processing item request: ${JSON.stringify(itemRequest)}`);
+                core.info(`Processing item request: ${JSON.stringify(itemRequest)}`);
                 // Get the vault ID for the vault
                 const secretVault = itemRequest.vault;
                 const vaultID = await getVaultID(secretVault);
@@ -187,12 +187,12 @@ async function run() {
                 const fieldName = itemRequest.field;
                 const outputString = itemRequest.outputName;
                 const outputOverridden = itemRequest.outputOverridden;
-                core.debug(`Vault: ${secretVault}`);
-                core.debug(`Vault ID: ${vaultID}`);
-                core.debug(`Secret Title: ${secretTitle}`);
-                core.debug(`Field Name: ${fieldName}`);
-                core.debug(`Output String: ${outputString}`);
-                core.debug(`Output Overridden: ${outputOverridden}`);
+                core.info(`Vault: ${secretVault}`);
+                core.info(`Vault ID: ${vaultID}`);
+                core.info(`Secret Title: ${secretTitle}`);
+                core.info(`Field Name: ${fieldName}`);
+                core.info(`Output String: ${outputString}`);
+                core.info(`Output Overridden: ${outputOverridden}`);
                 if (vaultID !== undefined) {
                     getSecret(vaultID, secretTitle, fieldName, outputString, outputOverridden);
                 }

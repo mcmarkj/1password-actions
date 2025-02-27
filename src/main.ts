@@ -17,8 +17,10 @@ const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
 const getVaultID = async (vaultName: string): Promise<string | undefined> => {
   try {
     const vaults = await op.listVaults()
+    core.debug(`getVaultID - vaults: ${JSON.stringify(vaults)}`)
     for (const vault of vaults) {
       if (vault.name === vaultName) {
+        core.debug(`getVaultID - found vault: ${JSON.stringify(vault)}`)
         return vault.id
       }
     }
@@ -29,7 +31,9 @@ const getVaultID = async (vaultName: string): Promise<string | undefined> => {
       core.info(`⚠️ No vault matched name '${vaultName}'`)
     }
   } catch (error) {
+    core.debug(`getVaultID - error: ${JSON.stringify(error)}`)
     if (instanceOfHttpError(error)) {
+      core.debug(`getVaultID - HTTP error`)
       if (fail_on_not_found) {
         core.setFailed(
           `🛑 Error for vault: '${vaultName}' - '${error.message}'`
@@ -49,7 +53,7 @@ const getSecret = async (
   secretTitle: string,
   fieldName: string,
   outputString: string,
-  outputOverriden: boolean
+  outputOverridden: boolean
 ): Promise<void> => {
   try {
     const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
@@ -58,22 +62,29 @@ const getSecret = async (
 
     // if fieldName wasn't specified, we just output any we find
     let foundSecret = fieldName === ''
+    core.debug(`getSecret - foundSecret: ${foundSecret}`)
 
-    for (const items of secretFields) {
-      if (fieldName !== '' && items.label !== fieldName) {
+    for (const item of secretFields) {
+      if (fieldName !== '' && item.label !== fieldName) {
+        core.debug(`getSecret - skipping field: ${fieldName} - ${item.label}`)
         continue
       }
-      if (items.value != null) {
-        let outputName = `${outputString}_${items.label?.toLowerCase()}`
-        if (fieldName && outputOverriden) {
+      if (item.value != null) {
+        core.debug(`getSecret - found field: ${item.label}`)
+        let outputName = `${outputString}_${item.label?.toLowerCase()}`
+        if (fieldName && outputOverridden) {
+          core.debug(`getSecret - overriding output name: ${outputString}`)
           outputName = outputString
         }
-        setOutput(outputName, items.value.toString())
-        setEnvironmental(outputName, items.value.toString())
+        setOutput(outputName, item.value.toString())
+        setEnvironmental(outputName, item.value.toString())
         foundSecret = true
         if (fieldName) {
+          core.debug(`getSecret - found asked for field: ${fieldName}`)
           break
         }
+      } else {
+        core.debug(`getSecret - skipping field as null: ${item.label}`)
       }
     }
 
@@ -118,6 +129,7 @@ const setOutput = async (
     core.setOutput(outputName, secretValue)
     core.info(`Secret ready for use: ${outputName}`.toString())
   } catch (error) {
+    core.debug(`setOutput - error: ${JSON.stringify(error)}`)
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
@@ -135,6 +147,7 @@ const setEnvironmental = async (
       )
     }
   } catch (error) {
+    core.debug(`setEnvironmental - error: ${JSON.stringify(error)}`)
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
@@ -143,10 +156,16 @@ async function run(): Promise<void> {
   try {
     await retryAsync(
       async () => {
+        core.debug('Starting 1Password Connect Action')
         // Translate the vault path into it's respective segments
         const secretPath = core.getInput('secret-path')
         const itemRequests = parsing.parseItemRequestsInput(secretPath)
+
+        core.debug(`Vault path: ${secretPath}`)
+        core.debug(`Parsed item requests: ${JSON.stringify(itemRequests)}`)
+
         for (const itemRequest of itemRequests) {
+          core.debug(`Processing item request: ${JSON.stringify(itemRequest)}`)
           // Get the vault ID for the vault
           const secretVault = itemRequest.vault
           const vaultID = await getVaultID(secretVault)
@@ -154,14 +173,22 @@ async function run(): Promise<void> {
           const secretTitle = itemRequest.name
           const fieldName = itemRequest.field
           const outputString = itemRequest.outputName
-          const outputOverriden = itemRequest.outputOverriden
+          const outputOverridden = itemRequest.outputOverridden
+
+          core.debug(`Vault: ${secretVault}`)
+          core.debug(`Vault ID: ${vaultID}`)
+          core.debug(`Secret Title: ${secretTitle}`)
+          core.debug(`Field Name: ${fieldName}`)
+          core.debug(`Output String: ${outputString}`)
+          core.debug(`Output Overridden: ${outputOverridden}`)
+
           if (vaultID !== undefined) {
             getSecret(
               vaultID,
               secretTitle,
               fieldName,
               outputString,
-              outputOverriden
+              outputOverridden
             )
           } else {
             throw Error("Can't find vault.")
@@ -181,7 +208,7 @@ async function run(): Promise<void> {
   } catch (error) {
     if (isTooManyTries(error)) core.setFailed('🛑 Too many retries')
     if (error instanceof Error) core.setFailed(error.message)
-    console.log('Unexpected error: ', error)
+    core.setFailed(`Action failed with unknown error.`)
   }
 }
 

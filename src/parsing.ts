@@ -3,7 +3,7 @@ export type ItemRequest = {
   name: string
   field: string
   outputName: string
-  outputOverriden: boolean
+  outputOverridden: boolean
 }
 
 /**
@@ -23,7 +23,7 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
     let pathSpec = itemRequestLine
     let outputName = null
     let field = null
-    let outputOverriden = false
+    let outputOverridden = false
 
     const renameSigilIndex = itemRequestLine.lastIndexOf('|')
     if (renameSigilIndex > -1) {
@@ -72,7 +72,7 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
       outputName = normalizeOutputName(name).toLowerCase()
     } else {
       outputName = normalizeOutputName(outputName)
-      outputOverriden = true
+      outputOverridden = true
     }
 
     output.push({
@@ -80,7 +80,7 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
       name,
       field,
       outputName,
-      outputOverriden
+      outputOverridden
     })
   }
 

@@ -1,9 +1,9 @@
 import * as core from '@actions/core'
-import { OnePasswordConnect } from '@1password/connect'
+import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
-import { HttpError } from '@1password/connect/dist/lib/utils/error'
-import { isTooManyTries, retryAsync } from 'ts-retry'
-import { TooManyTries } from 'ts-retry/lib/cjs/retry/tooManyTries'
+import {HttpError} from '@1password/connect/dist/lib/utils/error'
+import {isTooManyTries, retryAsync} from 'ts-retry'
+import {TooManyTries} from 'ts-retry/lib/cjs/retry/tooManyTries'
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({

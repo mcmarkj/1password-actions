@@ -57,10 +57,9 @@ const populateVaultsList = async () => {
     var _a, _b;
     try {
         const vaultsList = await op.listVaults();
-        core.info(`Vaults list: ${JSON.stringify(vaults)}`);
         for (const vault of vaultsList) {
-            const vaultName = (_a = vault.name) !== null && _a !== void 0 ? _a : "";
-            const vaultID = (_b = vault.id) !== null && _b !== void 0 ? _b : "";
+            const vaultName = (_a = vault.name) !== null && _a !== void 0 ? _a : '';
+            const vaultID = (_b = vault.id) !== null && _b !== void 0 ? _b : '';
             if (vaultName && vaultID) {
                 vaults[vaultName] = vaultID;
             }
@@ -68,6 +67,7 @@ const populateVaultsList = async () => {
                 core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`);
             }
         }
+        core.info(`Vaults list: ${JSON.stringify(vaults)}`);
     }
     catch (error) {
         core.error(`Error getting vaults: ${error}`);

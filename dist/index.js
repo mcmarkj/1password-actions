@@ -51,38 +51,37 @@ const op = (0, connect_1.OnePasswordConnect)({
     token: core.getInput('connect-server-token'),
     keepAlive: true
 });
+const vaults = {};
 const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
-const getVaultID = async (vaultName) => {
+const populateVaultsList = async () => {
+    var _a, _b;
     try {
-        const vaults = await op.listVaults();
-        core.info(`getVaultID - vaults: ${JSON.stringify(vaults)}`);
-        for (const vault of vaults) {
-            if (vault.name === vaultName) {
-                core.info(`getVaultID - found vault: ${JSON.stringify(vault)}`);
-                return vault.id;
+        const vaultsList = await op.listVaults();
+        core.info(`Vaults list: ${JSON.stringify(vaults)}`);
+        for (const vault of vaultsList) {
+            const vaultName = (_a = vault.name) !== null && _a !== void 0 ? _a : "";
+            const vaultID = (_b = vault.id) !== null && _b !== void 0 ? _b : "";
+            if (vaultName && vaultID) {
+                vaults[vaultName] = vaultID;
             }
-        }
-        if (fail_on_not_found) {
-            core.setFailed(`🛑 No vault matched name '${vaultName}'`);
-        }
-        else {
-            core.info(`⚠️ No vault matched name '${vaultName}'`);
+            else {
+                core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`);
+            }
         }
     }
     catch (error) {
-        core.info(`getVaultID - error: ${JSON.stringify(error)}`);
-        if (instanceOfHttpError(error)) {
-            core.info(`getVaultID - HTTP error`);
-            if (fail_on_not_found) {
-                core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`);
-            }
-            else {
-                core.info(`⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
-            }
-        }
-        if (error instanceof Error)
-            core.setFailed(error.message);
+        core.error(`Error getting vaults: ${error}`);
+        core.setFailed(`🛑 Error getting vaults.`);
+        throw error;
     }
+};
+const getVaultID = async (vaultName) => {
+    var _a;
+    const vaultID = (_a = vaults[vaultName]) !== null && _a !== void 0 ? _a : undefined;
+    if (vaultID === undefined && fail_on_not_found) {
+        core.setFailed(`🛑 No vault matched name '${vaultName}'`);
+    }
+    return vaultID;
 };
 const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOverridden) => {
     var _a;
@@ -135,7 +134,7 @@ const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOv
             }
         }
         if (error instanceof Error)
-            core.setFailed(error.message);
+            core.setFailed(`Error getting secret: ${error.message}`);
     }
 };
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -172,6 +171,7 @@ async function run() {
     try {
         await (0, ts_retry_1.retryAsync)(async () => {
             core.info('Starting 1Password Connect Action');
+            populateVaultsList();
             // Translate the vault path into it's respective segments
             const secretPath = core.getInput('secret-path');
             const itemRequests = parsing.parseItemRequestsInput(secretPath);

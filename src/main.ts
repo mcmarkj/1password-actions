@@ -12,40 +12,36 @@ const op = OnePasswordConnect({
   keepAlive: true
 })
 
+const vaults: Record<string, string> = {}
+
 const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
 
-const getVaultID = async (vaultName: string): Promise<string | undefined> => {
+const populateVaultsList = async (): Promise<void> => {
   try {
-    const vaults = await op.listVaults()
-    core.info(`getVaultID - vaults: ${JSON.stringify(vaults)}`)
-    for (const vault of vaults) {
-      if (vault.name === vaultName) {
-        core.info(`getVaultID - found vault: ${JSON.stringify(vault)}`)
-        return vault.id
+    const vaultsList = await op.listVaults()
+    core.info(`Vaults list: ${JSON.stringify(vaults)}`)
+    for (const vault of vaultsList) {
+      const vaultName = vault.name ?? ''
+      const vaultID = vault.id ?? ''
+      if (vaultName && vaultID) {
+        vaults[vaultName] = vaultID
+      } else {
+        core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`)
       }
-    }
-
-    if (fail_on_not_found) {
-      core.setFailed(`🛑 No vault matched name '${vaultName}'`)
-    } else {
-      core.info(`⚠️ No vault matched name '${vaultName}'`)
     }
   } catch (error) {
-    core.info(`getVaultID - error: ${JSON.stringify(error)}`)
-    if (instanceOfHttpError(error)) {
-      core.info(`getVaultID - HTTP error`)
-      if (fail_on_not_found) {
-        core.setFailed(
-          `🛑 Error for vault: '${vaultName}' - '${error.message}'`
-        )
-      } else {
-        core.info(
-          `⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`
-        )
-      }
-    }
-    if (error instanceof Error) core.setFailed(error.message)
+    core.error(`Error getting vaults: ${error}`)
+    core.setFailed(`🛑 Error getting vaults.`)
+    throw error
   }
+}
+
+const getVaultID = async (vaultName: string): Promise<string | undefined> => {
+  const vaultID = vaults[vaultName] ?? undefined
+  if (vaultID === undefined && fail_on_not_found) {
+    core.setFailed(`🛑 No vault matched name '${vaultName}'`)
+  }
+  return vaultID
 }
 
 const getSecret = async (
@@ -111,7 +107,8 @@ const getSecret = async (
         )
       }
     }
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error)
+      core.setFailed(`Error getting secret: ${error.message}`)
   }
 }
 
@@ -157,6 +154,7 @@ async function run(): Promise<void> {
     await retryAsync(
       async () => {
         core.info('Starting 1Password Connect Action')
+        populateVaultsList()
         // Translate the vault path into it's respective segments
         const secretPath = core.getInput('secret-path')
         const itemRequests = parsing.parseItemRequestsInput(secretPath)

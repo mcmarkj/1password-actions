@@ -169,6 +169,7 @@ const setEnvironmental = async (outputName, secretValue) => {
 };
 async function run() {
     try {
+        const delay = (0, ts_retry_1.createExponetialDelay)(1); // 1, 2, 4, 8, 16... second delay
         await (0, ts_retry_1.retryAsync)(async () => {
             core.info('Starting 1Password Connect Action');
             await populateVaultsList();
@@ -201,10 +202,10 @@ async function run() {
                 }
             }
         }, {
-            delay: 10000,
+            delay,
             maxTry: core.getInput('retry-count')
                 ? parseInt(core.getInput('retry-count'))
-                : 3,
+                : 5,
             onMaxRetryFunc: () => {
                 throw new tooManyTries_1.TooManyTries(new Error('🛑 Too many retries'));
             }

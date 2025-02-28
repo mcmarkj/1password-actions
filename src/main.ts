@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
 import {HttpError} from '@1password/connect/dist/lib/utils/error'
-import {isTooManyTries, retryAsync} from 'ts-retry'
+import {createExponetialDelay, isTooManyTries, retryAsync} from 'ts-retry'
 import {TooManyTries} from 'ts-retry/lib/cjs/retry/tooManyTries'
 
 // Create new connector with HTTP Pooling
@@ -151,6 +151,7 @@ const setEnvironmental = async (
 
 async function run(): Promise<void> {
   try {
+    const delay = createExponetialDelay(1) // 1, 2, 4, 8, 16... second delay
     await retryAsync(
       async () => {
         core.info('Starting 1Password Connect Action')
@@ -194,10 +195,10 @@ async function run(): Promise<void> {
         }
       },
       {
-        delay: 10000,
+        delay,
         maxTry: core.getInput('retry-count')
           ? parseInt(core.getInput('retry-count'))
-          : 3,
+          : 5,
         onMaxRetryFunc: () => {
           throw new TooManyTries(new Error('🛑 Too many retries'))
         }

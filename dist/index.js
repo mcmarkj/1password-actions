@@ -171,7 +171,7 @@ async function run() {
     try {
         await (0, ts_retry_1.retryAsync)(async () => {
             core.info('Starting 1Password Connect Action');
-            populateVaultsList();
+            await populateVaultsList();
             // Translate the vault path into it's respective segments
             const secretPath = core.getInput('secret-path');
             const itemRequests = parsing.parseItemRequestsInput(secretPath);
@@ -194,7 +194,7 @@ async function run() {
                 core.info(`Output String: ${outputString}`);
                 core.info(`Output Overridden: ${outputOverridden}`);
                 if (vaultID !== undefined) {
-                    getSecret(vaultID, secretTitle, fieldName, outputString, outputOverridden);
+                    await getSecret(vaultID, secretTitle, fieldName, outputString, outputOverridden);
                 }
                 else {
                     throw Error("Can't find vault.");

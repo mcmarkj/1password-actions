@@ -154,7 +154,7 @@ async function run(): Promise<void> {
     await retryAsync(
       async () => {
         core.info('Starting 1Password Connect Action')
-        populateVaultsList()
+        await populateVaultsList()
         // Translate the vault path into it's respective segments
         const secretPath = core.getInput('secret-path')
         const itemRequests = parsing.parseItemRequestsInput(secretPath)
@@ -181,7 +181,7 @@ async function run(): Promise<void> {
           core.info(`Output Overridden: ${outputOverridden}`)
 
           if (vaultID !== undefined) {
-            getSecret(
+            await getSecret(
               vaultID,
               secretTitle,
               fieldName,

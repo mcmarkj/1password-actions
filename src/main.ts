@@ -1,9 +1,9 @@
 import * as core from '@actions/core'
-import {OnePasswordConnect} from '@1password/connect'
+import { OnePasswordConnect } from '@1password/connect'
 import * as parsing from './parsing'
-import {HttpError} from '@1password/connect/dist/lib/utils/error'
-import {isTooManyTries, retryAsync} from 'ts-retry'
-import {TooManyTries} from 'ts-retry/lib/cjs/retry/tooManyTries'
+import { HttpError } from '@1password/connect/dist/lib/utils/error'
+import { isTooManyTries, retryAsync } from 'ts-retry'
+import { TooManyTries } from 'ts-retry/lib/cjs/retry/tooManyTries'
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({
@@ -19,7 +19,6 @@ const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
 const populateVaultsList = async (): Promise<void> => {
   try {
     const vaultsList = await op.listVaults()
-    core.info(`Vaults list: ${JSON.stringify(vaults)}`)
     for (const vault of vaultsList) {
       const vaultName = vault.name ?? ''
       const vaultID = vault.id ?? ''
@@ -29,6 +28,7 @@ const populateVaultsList = async (): Promise<void> => {
         core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`)
       }
     }
+    core.info(`Vaults list: ${JSON.stringify(vaults)}`)
   } catch (error) {
     core.error(`Error getting vaults: ${error}`)
     core.setFailed(`🛑 Error getting vaults.`)

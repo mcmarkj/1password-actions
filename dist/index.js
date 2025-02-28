@@ -40,12 +40,10 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSecret = exports.getVaultID = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const connect_1 = __nccwpck_require__(4088);
-const parsing = __importStar(__nccwpck_require__(9872));
 const ts_retry_1 = __nccwpck_require__(4151);
-const tooManyTries_1 = __nccwpck_require__(5626);
-// Create new connector with HTTP Pooling
 const op = (0, connect_1.OnePasswordConnect)({
     serverURL: core.getInput('connect-server-url'),
     token: core.getInput('connect-server-token'),
@@ -53,233 +51,69 @@ const op = (0, connect_1.OnePasswordConnect)({
 });
 const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
 const getVaultID = async (vaultName) => {
-    try {
+    return await (0, ts_retry_1.retryAsync)(async () => {
         const vaults = await op.listVaults();
         for (const vault of vaults) {
             if (vault.name === vaultName) {
                 return vault.id;
             }
         }
-        if (fail_on_not_found) {
-            core.setFailed(`🛑 No vault matched name '${vaultName}'`);
-        }
-        else {
-            core.info(`⚠️ No vault matched name '${vaultName}'`);
-        }
-    }
-    catch (error) {
-        if (instanceOfHttpError(error)) {
-            if (fail_on_not_found) {
-                core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`);
-            }
-            else {
-                core.info(`⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
-            }
-        }
-        if (error instanceof Error)
-            core.setFailed(error.message);
-    }
+        throw new Error(`No vault matched name '${vaultName}'`);
+    }, { maxTry: 3, delay: 1000 });
 };
+exports.getVaultID = getVaultID;
 const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOverriden) => {
-    var _a;
-    try {
+    return await (0, ts_retry_1.retryAsync)(async () => {
+        var _a;
         const vaultItems = await op.getItemByTitle(vaultID, secretTitle);
         const secretFields = vaultItems['fields'] || [];
-        // if fieldName wasn't specified, we just output any we find
         let foundSecret = fieldName === '';
         for (const items of secretFields) {
-            if (fieldName !== '' && items.label !== fieldName) {
+            if (fieldName && items.label !== fieldName)
                 continue;
-            }
-            if (items.value != null) {
-                let outputName = `${outputString}_${(_a = items.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
-                if (fieldName && outputOverriden) {
-                    outputName = outputString;
-                }
-                setOutput(outputName, items.value.toString());
-                setEnvironmental(outputName, items.value.toString());
+            if (items.value) {
+                let outputName = outputOverriden ? outputString : `${outputString}_${(_a = items.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
+                core.setOutput(outputName, items.value.toString());
                 foundSecret = true;
-                if (fieldName) {
+                if (fieldName)
                     break;
-                }
             }
         }
         if (!foundSecret) {
+            throw new Error(`No secret matched '${secretTitle}' with field '${fieldName}'`);
+        }
+    }, { maxTry: 3, delay: 1000 });
+};
+exports.getSecret = getSecret;
+const run = async () => {
+    try {
+        const vaultName = core.getInput('vault-name');
+        const secretTitle = core.getInput('secret-title');
+        const fieldName = core.getInput('field-name');
+        const outputString = core.getInput('output-string');
+        const outputOverriden = core.getBooleanInput('output-overriden');
+        const vaultID = await getVaultID(vaultName);
+        if (!vaultID) {
             if (fail_on_not_found) {
-                core.setFailed(`🛑 No secret matched '${secretTitle}' with field '${fieldName}'`);
+                throw new Error(`Vault '${vaultName}' not found.`);
             }
             else {
-                core.info(`⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`);
+                core.info(`Vault '${vaultName}' not found, but continuing as fail_on_not_found is false.`);
+                return;
             }
         }
+        await getSecret(vaultID, secretTitle, fieldName, outputString, outputOverriden);
     }
     catch (error) {
-        if (instanceOfHttpError(error)) {
-            if (fail_on_not_found) {
-                core.setFailed(`🛑 Error for secret: '${secretTitle}' - '${error.message}'`);
-            }
-            else {
-                core.info(`⚠️ Error for secret: '${secretTitle}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
-            }
+        if ((0, ts_retry_1.isTooManyTries)(error)) {
+            core.setFailed(`Retry limit reached: ${error.message}`);
         }
-        if (error instanceof Error)
-            core.setFailed(error.message);
-    }
-};
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-function instanceOfHttpError(object) {
-    return Number.isInteger(object.status);
-}
-const setOutput = async (outputName, secretValue) => {
-    try {
-        core.setSecret(secretValue);
-        core.setOutput(outputName, secretValue);
-        core.info(`Secret ready for use: ${outputName}`.toString());
-    }
-    catch (error) {
-        if (error instanceof Error)
-            core.setFailed(error.message);
-    }
-};
-const setEnvironmental = async (outputName, secretValue) => {
-    try {
-        if (core.getInput('export-env-vars') === 'true') {
-            core.setSecret(secretValue);
-            core.exportVariable(outputName, secretValue);
-            core.info(`Environmental variable globally ready for use in pipeline: '${outputName}'`);
+        else {
+            core.setFailed(error instanceof Error ? error.message : String(error));
         }
     }
-    catch (error) {
-        if (error instanceof Error)
-            core.setFailed(error.message);
-    }
 };
-async function run() {
-    try {
-        await (0, ts_retry_1.retryAsync)(async () => {
-            // Translate the vault path into it's respective segments
-            const secretPath = core.getInput('secret-path');
-            const itemRequests = parsing.parseItemRequestsInput(secretPath);
-            for (const itemRequest of itemRequests) {
-                // Get the vault ID for the vault
-                const secretVault = itemRequest.vault;
-                const vaultID = await getVaultID(secretVault);
-                // Set the secrets fields
-                const secretTitle = itemRequest.name;
-                const fieldName = itemRequest.field;
-                const outputString = itemRequest.outputName;
-                const outputOverriden = itemRequest.outputOverriden;
-                if (vaultID !== undefined) {
-                    getSecret(vaultID, secretTitle, fieldName, outputString, outputOverriden);
-                }
-                else {
-                    throw Error("Can't find vault.");
-                }
-            }
-        }, {
-            delay: 10000,
-            maxTry: core.getInput('retry-count')
-                ? parseInt(core.getInput('retry-count'))
-                : 3,
-            onMaxRetryFunc: () => {
-                throw new tooManyTries_1.TooManyTries(new Error('🛑 Too many retries'));
-            }
-        });
-    }
-    catch (error) {
-        if ((0, ts_retry_1.isTooManyTries)(error))
-            core.setFailed('🛑 Too many retries');
-        if (error instanceof Error)
-            core.setFailed(error.message);
-    }
-}
 run();
-
-
-/***/ }),
-
-/***/ 9872:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseItemRequestsInput = parseItemRequestsInput;
-/**
- * Parses an item requests input string into vault names, item names and their resulting normalized output names.
- * Based on parsing from https://github.com/hashicorp/vault-action/
- * Big thanks to https://github.com/RobotsAndPencils/1password-action for this code.
- */
-function parseItemRequestsInput(itemInput) {
-    const itemRequestLines = itemInput
-        .split('\n')
-        .filter(key => !!key)
-        .map(key => key.trim())
-        .filter(key => key.length !== 0);
-    const output = [];
-    for (const itemRequestLine of itemRequestLines) {
-        let pathSpec = itemRequestLine;
-        let outputName = null;
-        let field = null;
-        let outputOverriden = false;
-        const renameSigilIndex = itemRequestLine.lastIndexOf('|');
-        if (renameSigilIndex > -1) {
-            pathSpec = itemRequestLine.substring(0, renameSigilIndex).trim();
-            outputName = itemRequestLine.substring(renameSigilIndex + 1).trim();
-            if (outputName.length < 1) {
-                throw Error(`You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`.toString());
-            }
-        }
-        let pathParts = [];
-        if (pathSpec.startsWith('"')) {
-            const secondQuoteIndex = pathSpec.indexOf('"', 1);
-            const vault = pathSpec.substr(0, secondQuoteIndex + 1);
-            pathParts.push(vault);
-            // + 3 to remove the ' > ' prefix
-            const remainder = pathSpec.slice(secondQuoteIndex + 1 + 3);
-            pathParts.push(remainder);
-        }
-        else {
-            pathParts = pathSpec
-                .split(' > ')
-                .map(part => part.trim())
-                .filter(part => part.length !== 0);
-        }
-        if (pathParts.length < 2 && pathParts.length > 3) {
-            throw Error(`You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`.toString());
-        }
-        const [vaultQuoted, nameQuoted, fieldQuoted] = pathParts;
-        const vault = vaultQuoted.replace(new RegExp('"', 'g'), '');
-        const name = nameQuoted.replace(new RegExp('"', 'g'), '');
-        if (fieldQuoted) {
-            field = fieldQuoted.replace(new RegExp('"', 'g'), '');
-        }
-        else {
-            field = '';
-        }
-        if (!outputName) {
-            outputName = normalizeOutputName(name).toLowerCase();
-        }
-        else {
-            outputName = normalizeOutputName(outputName);
-            outputOverriden = true;
-        }
-        output.push({
-            vault,
-            name,
-            field,
-            outputName,
-            outputOverriden
-        });
-    }
-    return output;
-}
-function normalizeOutputName(dataKey) {
-    return dataKey
-        .replace(/\s/g, '_')
-        .replace(/\./g, '_')
-        .replace(/[^\p{L}\p{N}_-]/gu, '');
-}
 
 
 /***/ }),

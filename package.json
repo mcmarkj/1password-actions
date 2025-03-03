@@ -28,7 +28,7 @@
     "@1password/connect": "^1.4.1",
     "@actions/core": "^1.11.1",
     "@types/istanbul-lib-report": "^3.0.3",
-    "ts-retry": "^5.0.1"
+    "ts-retry": "^6.0.0"
   },
   "devDependencies": {
     "@actions/core": "^1.11.1",

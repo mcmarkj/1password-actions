@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
 import * as parsing from './parsing'
 import {HttpError} from '@1password/connect/dist/lib/utils/error'
-import {isTooManyTries, retry, retryAsync} from 'ts-retry'
+import {createExponetialDelay, isTooManyTries, retryAsync} from 'ts-retry'
 import {TooManyTries} from 'ts-retry/lib/cjs/retry/tooManyTries'
 
 // Create new connector with HTTP Pooling
@@ -12,36 +12,36 @@ const op = OnePasswordConnect({
   keepAlive: true
 })
 
+const vaults: Record<string, string> = {}
+
 const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
 
-const getVaultID = async (vaultName: string): Promise<string | undefined> => {
+const populateVaultsList = async (): Promise<void> => {
   try {
-    const vaults = await op.listVaults()
-    for (const vault of vaults) {
-      if (vault.name === vaultName) {
-        return vault.id
-      }
-    }
-
-    if (fail_on_not_found) {
-      core.setFailed(`🛑 No vault matched name '${vaultName}'`)
-    } else {
-      core.info(`⚠️ No vault matched name '${vaultName}'`)
-    }
-  } catch (error) {
-    if (instanceOfHttpError(error)) {
-      if (fail_on_not_found) {
-        core.setFailed(
-          `🛑 Error for vault: '${vaultName}' - '${error.message}'`
-        )
+    const vaultsList = await op.listVaults()
+    for (const vault of vaultsList) {
+      const vaultName = vault.name ?? ''
+      const vaultID = vault.id ?? ''
+      if (vaultName && vaultID) {
+        vaults[vaultName] = vaultID
       } else {
-        core.info(
-          `⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`
-        )
+        core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`)
       }
     }
-    if (error instanceof Error) core.setFailed(error.message)
+    core.info(`Vaults list: ${JSON.stringify(vaults)}`)
+  } catch (error) {
+    core.error(`Error getting vaults: ${error}`)
+    core.setFailed(`🛑 Error getting vaults.`)
+    throw error
   }
+}
+
+const getVaultID = async (vaultName: string): Promise<string | undefined> => {
+  const vaultID = vaults[vaultName] ?? undefined
+  if (vaultID === undefined && fail_on_not_found) {
+    core.setFailed(`🛑 No vault matched name '${vaultName}'`)
+  }
+  return vaultID
 }
 
 const getSecret = async (
@@ -49,7 +49,7 @@ const getSecret = async (
   secretTitle: string,
   fieldName: string,
   outputString: string,
-  outputOverriden: boolean
+  outputOverridden: boolean
 ): Promise<void> => {
   try {
     const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
@@ -58,18 +58,17 @@ const getSecret = async (
 
     // if fieldName wasn't specified, we just output any we find
     let foundSecret = fieldName === ''
-
-    for (const items of secretFields) {
-      if (fieldName !== '' && items.label !== fieldName) {
+    for (const item of secretFields) {
+      if (fieldName !== '' && item.label !== fieldName) {
         continue
       }
-      if (items.value != null) {
-        let outputName = `${outputString}_${items.label?.toLowerCase()}`
-        if (fieldName && outputOverriden) {
+      if (item.value != null) {
+        let outputName = `${outputString}_${item.label?.toLowerCase()}`
+        if (fieldName && outputOverridden) {
           outputName = outputString
         }
-        setOutput(outputName, items.value.toString())
-        setEnvironmental(outputName, items.value.toString())
+        setOutput(outputName, item.value.toString())
+        setEnvironmental(outputName, item.value.toString())
         foundSecret = true
         if (fieldName) {
           break
@@ -100,7 +99,8 @@ const getSecret = async (
         )
       }
     }
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error)
+      core.setFailed(`Error getting secret: ${error.message}`)
   }
 }
 
@@ -141,11 +141,14 @@ const setEnvironmental = async (
 
 async function run(): Promise<void> {
   try {
+    const delay = createExponetialDelay(1) // 1, 2, 4, 8, 16... second delay
     await retryAsync(
       async () => {
+        await populateVaultsList()
         // Translate the vault path into it's respective segments
         const secretPath = core.getInput('secret-path')
         const itemRequests = parsing.parseItemRequestsInput(secretPath)
+
         for (const itemRequest of itemRequests) {
           // Get the vault ID for the vault
           const secretVault = itemRequest.vault
@@ -154,14 +157,15 @@ async function run(): Promise<void> {
           const secretTitle = itemRequest.name
           const fieldName = itemRequest.field
           const outputString = itemRequest.outputName
-          const outputOverriden = itemRequest.outputOverriden
+          const outputOverridden = itemRequest.outputOverridden
+
           if (vaultID !== undefined) {
-            getSecret(
+            await getSecret(
               vaultID,
               secretTitle,
               fieldName,
               outputString,
-              outputOverriden
+              outputOverridden
             )
           } else {
             throw Error("Can't find vault.")
@@ -169,10 +173,10 @@ async function run(): Promise<void> {
         }
       },
       {
-        delay: 10000,
+        delay,
         maxTry: core.getInput('retry-count')
           ? parseInt(core.getInput('retry-count'))
-          : 3,
+          : 5,
         onMaxRetryFunc: () => {
           throw new TooManyTries(new Error('🛑 Too many retries'))
         }
@@ -181,7 +185,10 @@ async function run(): Promise<void> {
   } catch (error) {
     if (isTooManyTries(error)) core.setFailed('🛑 Too many retries')
     if (error instanceof Error) core.setFailed(error.message)
+    core.setFailed(`Action failed with unknown error.`)
   }
 }
 
-run()
+run().catch(error => {
+  core.setFailed(`Action failed with error: ${error.message}`)
+})

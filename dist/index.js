@@ -51,53 +51,56 @@ const op = (0, connect_1.OnePasswordConnect)({
     token: core.getInput('connect-server-token'),
     keepAlive: true
 });
+const vaults = {};
 const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
-const getVaultID = async (vaultName) => {
+const populateVaultsList = async () => {
+    var _a, _b;
     try {
-        const vaults = await op.listVaults();
-        for (const vault of vaults) {
-            if (vault.name === vaultName) {
-                return vault.id;
-            }
-        }
-        if (fail_on_not_found) {
-            core.setFailed(`🛑 No vault matched name '${vaultName}'`);
-        }
-        else {
-            core.info(`⚠️ No vault matched name '${vaultName}'`);
-        }
-    }
-    catch (error) {
-        if (instanceOfHttpError(error)) {
-            if (fail_on_not_found) {
-                core.setFailed(`🛑 Error for vault: '${vaultName}' - '${error.message}'`);
+        const vaultsList = await op.listVaults();
+        for (const vault of vaultsList) {
+            const vaultName = (_a = vault.name) !== null && _a !== void 0 ? _a : '';
+            const vaultID = (_b = vault.id) !== null && _b !== void 0 ? _b : '';
+            if (vaultName && vaultID) {
+                vaults[vaultName] = vaultID;
             }
             else {
-                core.info(`⚠️ Error for vault: '${vaultName}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
+                core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`);
             }
         }
-        if (error instanceof Error)
-            core.setFailed(error.message);
+        core.info(`Vaults list: ${JSON.stringify(vaults)}`);
+    }
+    catch (error) {
+        core.error(`Error getting vaults: ${error}`);
+        core.setFailed(`🛑 Error getting vaults.`);
+        throw error;
     }
 };
-const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOverriden) => {
+const getVaultID = async (vaultName) => {
+    var _a;
+    const vaultID = (_a = vaults[vaultName]) !== null && _a !== void 0 ? _a : undefined;
+    if (vaultID === undefined && fail_on_not_found) {
+        core.setFailed(`🛑 No vault matched name '${vaultName}'`);
+    }
+    return vaultID;
+};
+const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOverridden) => {
     var _a;
     try {
         const vaultItems = await op.getItemByTitle(vaultID, secretTitle);
         const secretFields = vaultItems['fields'] || [];
         // if fieldName wasn't specified, we just output any we find
         let foundSecret = fieldName === '';
-        for (const items of secretFields) {
-            if (fieldName !== '' && items.label !== fieldName) {
+        for (const item of secretFields) {
+            if (fieldName !== '' && item.label !== fieldName) {
                 continue;
             }
-            if (items.value != null) {
-                let outputName = `${outputString}_${(_a = items.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
-                if (fieldName && outputOverriden) {
+            if (item.value != null) {
+                let outputName = `${outputString}_${(_a = item.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
+                if (fieldName && outputOverridden) {
                     outputName = outputString;
                 }
-                setOutput(outputName, items.value.toString());
-                setEnvironmental(outputName, items.value.toString());
+                setOutput(outputName, item.value.toString());
+                setEnvironmental(outputName, item.value.toString());
                 foundSecret = true;
                 if (fieldName) {
                     break;
@@ -123,7 +126,7 @@ const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOv
             }
         }
         if (error instanceof Error)
-            core.setFailed(error.message);
+            core.setFailed(`Error getting secret: ${error.message}`);
     }
 };
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -156,7 +159,9 @@ const setEnvironmental = async (outputName, secretValue) => {
 };
 async function run() {
     try {
+        const delay = (0, ts_retry_1.createExponetialDelay)(1); // 1, 2, 4, 8, 16... second delay
         await (0, ts_retry_1.retryAsync)(async () => {
+            await populateVaultsList();
             // Translate the vault path into it's respective segments
             const secretPath = core.getInput('secret-path');
             const itemRequests = parsing.parseItemRequestsInput(secretPath);
@@ -168,19 +173,19 @@ async function run() {
                 const secretTitle = itemRequest.name;
                 const fieldName = itemRequest.field;
                 const outputString = itemRequest.outputName;
-                const outputOverriden = itemRequest.outputOverriden;
+                const outputOverridden = itemRequest.outputOverridden;
                 if (vaultID !== undefined) {
-                    getSecret(vaultID, secretTitle, fieldName, outputString, outputOverriden);
+                    await getSecret(vaultID, secretTitle, fieldName, outputString, outputOverridden);
                 }
                 else {
                     throw Error("Can't find vault.");
                 }
             }
         }, {
-            delay: 10000,
+            delay,
             maxTry: core.getInput('retry-count')
                 ? parseInt(core.getInput('retry-count'))
-                : 3,
+                : 5,
             onMaxRetryFunc: () => {
                 throw new tooManyTries_1.TooManyTries(new Error('🛑 Too many retries'));
             }
@@ -191,9 +196,12 @@ async function run() {
             core.setFailed('🛑 Too many retries');
         if (error instanceof Error)
             core.setFailed(error.message);
+        core.setFailed(`Action failed with unknown error.`);
     }
 }
-run();
+run().catch(error => {
+    core.setFailed(`Action failed with error: ${error.message}`);
+});
 
 
 /***/ }),
@@ -221,7 +229,7 @@ function parseItemRequestsInput(itemInput) {
         let pathSpec = itemRequestLine;
         let outputName = null;
         let field = null;
-        let outputOverriden = false;
+        let outputOverridden = false;
         const renameSigilIndex = itemRequestLine.lastIndexOf('|');
         if (renameSigilIndex > -1) {
             pathSpec = itemRequestLine.substring(0, renameSigilIndex).trim();
@@ -262,14 +270,14 @@ function parseItemRequestsInput(itemInput) {
         }
         else {
             outputName = normalizeOutputName(outputName);
-            outputOverriden = true;
+            outputOverridden = true;
         }
         output.push({
             vault,
             name,
             field,
             outputName,
-            outputOverriden
+            outputOverridden
         });
     }
     return output;

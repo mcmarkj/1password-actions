@@ -33,7 +33,7 @@ You can then utilise these credentials elsewhere in your pipelines
 You can optionally set `export-env-vars: "true"` in your `with` block, this will set the variables as environmental vars globally throughout the following pipeline. 
 
 If your secret is not found, the action will fail by default. You can override this by setting `fail-on-not-found: "false"` in your `with` block.
-You can also set the number of retries for the action to attempt to fetch the secret by setting `retry-count: 3` in your `with` block.
+You can also set the number of retries for the action to attempt to fetch the secret by setting `retry-count: 3` in your `with` block. This uses an exponential backoff starting with a 1 second delay.
 
 
 ## Outputs (When not overridden)

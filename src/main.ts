@@ -58,29 +58,29 @@ const getSecret = async (
 
     // if fieldName wasn't specified, we just output any we find
     let foundSecret = fieldName === ''
-    core.info(`getSecret - foundSecret: ${foundSecret}`)
+    core.debug(`getSecret - foundSecret: ${foundSecret}`)
 
     for (const item of secretFields) {
       if (fieldName !== '' && item.label !== fieldName) {
-        core.info(`getSecret - skipping field: ${fieldName} - ${item.label}`)
+        core.debug(`getSecret - skipping field: ${fieldName} - ${item.label}`)
         continue
       }
       if (item.value != null) {
-        core.info(`getSecret - found field: ${item.label}`)
+        core.debug(`getSecret - found field: ${item.label}`)
         let outputName = `${outputString}_${item.label?.toLowerCase()}`
         if (fieldName && outputOverridden) {
-          core.info(`getSecret - overriding output name: ${outputString}`)
+          core.debug(`getSecret - overriding output name: ${outputString}`)
           outputName = outputString
         }
         setOutput(outputName, item.value.toString())
         setEnvironmental(outputName, item.value.toString())
         foundSecret = true
         if (fieldName) {
-          core.info(`getSecret - found asked for field: ${fieldName}`)
+          core.debug(`getSecret - found asked for field: ${fieldName}`)
           break
         }
       } else {
-        core.info(`getSecret - skipping field as null: ${item.label}`)
+        core.debug(`getSecret - skipping field as null: ${item.label}`)
       }
     }
 
@@ -126,7 +126,7 @@ const setOutput = async (
     core.setOutput(outputName, secretValue)
     core.info(`Secret ready for use: ${outputName}`.toString())
   } catch (error) {
-    core.info(`setOutput - error: ${JSON.stringify(error)}`)
+    core.debug(`setOutput - error: ${JSON.stringify(error)}`)
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
@@ -144,7 +144,7 @@ const setEnvironmental = async (
       )
     }
   } catch (error) {
-    core.info(`setEnvironmental - error: ${JSON.stringify(error)}`)
+    core.debug(`setEnvironmental - error: ${JSON.stringify(error)}`)
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
@@ -154,17 +154,17 @@ async function run(): Promise<void> {
     const delay = createExponetialDelay(1) // 1, 2, 4, 8, 16... second delay
     await retryAsync(
       async () => {
-        core.info('Starting 1Password Connect Action')
         await populateVaultsList()
+        core.debug('Starting 1Password Connect Action')
         // Translate the vault path into it's respective segments
         const secretPath = core.getInput('secret-path')
         const itemRequests = parsing.parseItemRequestsInput(secretPath)
 
-        core.info(`Vault path: ${secretPath}`)
-        core.info(`Parsed item requests: ${JSON.stringify(itemRequests)}`)
+        core.debug(`Vault path: ${secretPath}`)
+        core.debug(`Parsed item requests: ${JSON.stringify(itemRequests)}`)
 
         for (const itemRequest of itemRequests) {
-          core.info(`Processing item request: ${JSON.stringify(itemRequest)}`)
+          core.debug(`Processing item request: ${JSON.stringify(itemRequest)}`)
           // Get the vault ID for the vault
           const secretVault = itemRequest.vault
           const vaultID = await getVaultID(secretVault)
@@ -174,12 +174,12 @@ async function run(): Promise<void> {
           const outputString = itemRequest.outputName
           const outputOverridden = itemRequest.outputOverridden
 
-          core.info(`Vault: ${secretVault}`)
-          core.info(`Vault ID: ${vaultID}`)
-          core.info(`Secret Title: ${secretTitle}`)
-          core.info(`Field Name: ${fieldName}`)
-          core.info(`Output String: ${outputString}`)
-          core.info(`Output Overridden: ${outputOverridden}`)
+          core.debug(`Vault: ${secretVault}`)
+          core.debug(`Vault ID: ${vaultID}`)
+          core.debug(`Secret Title: ${secretTitle}`)
+          core.debug(`Field Name: ${fieldName}`)
+          core.debug(`Output String: ${outputString}`)
+          core.debug(`Output Overridden: ${outputOverridden}`)
 
           if (vaultID !== undefined) {
             await getSecret(

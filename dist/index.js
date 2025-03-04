@@ -90,29 +90,21 @@ const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOv
         const secretFields = vaultItems['fields'] || [];
         // if fieldName wasn't specified, we just output any we find
         let foundSecret = fieldName === '';
-        core.debug(`getSecret - foundSecret: ${foundSecret}`);
         for (const item of secretFields) {
             if (fieldName !== '' && item.label !== fieldName) {
-                core.debug(`getSecret - skipping field: ${fieldName} - ${item.label}`);
                 continue;
             }
             if (item.value != null) {
-                core.debug(`getSecret - found field: ${item.label}`);
                 let outputName = `${outputString}_${(_a = item.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
                 if (fieldName && outputOverridden) {
-                    core.debug(`getSecret - overriding output name: ${outputString}`);
                     outputName = outputString;
                 }
                 setOutput(outputName, item.value.toString());
                 setEnvironmental(outputName, item.value.toString());
                 foundSecret = true;
                 if (fieldName) {
-                    core.debug(`getSecret - found asked for field: ${fieldName}`);
                     break;
                 }
-            }
-            else {
-                core.debug(`getSecret - skipping field as null: ${item.label}`);
             }
         }
         if (!foundSecret) {
@@ -148,7 +140,6 @@ const setOutput = async (outputName, secretValue) => {
         core.info(`Secret ready for use: ${outputName}`.toString());
     }
     catch (error) {
-        core.debug(`setOutput - error: ${JSON.stringify(error)}`);
         if (error instanceof Error)
             core.setFailed(error.message);
     }
@@ -162,7 +153,6 @@ const setEnvironmental = async (outputName, secretValue) => {
         }
     }
     catch (error) {
-        core.debug(`setEnvironmental - error: ${JSON.stringify(error)}`);
         if (error instanceof Error)
             core.setFailed(error.message);
     }
@@ -172,14 +162,10 @@ async function run() {
         const delay = (0, ts_retry_1.createExponetialDelay)(1); // 1, 2, 4, 8, 16... second delay
         await (0, ts_retry_1.retryAsync)(async () => {
             await populateVaultsList();
-            core.debug('Starting 1Password Connect Action');
             // Translate the vault path into it's respective segments
             const secretPath = core.getInput('secret-path');
             const itemRequests = parsing.parseItemRequestsInput(secretPath);
-            core.debug(`Vault path: ${secretPath}`);
-            core.debug(`Parsed item requests: ${JSON.stringify(itemRequests)}`);
             for (const itemRequest of itemRequests) {
-                core.debug(`Processing item request: ${JSON.stringify(itemRequest)}`);
                 // Get the vault ID for the vault
                 const secretVault = itemRequest.vault;
                 const vaultID = await getVaultID(secretVault);
@@ -188,12 +174,6 @@ async function run() {
                 const fieldName = itemRequest.field;
                 const outputString = itemRequest.outputName;
                 const outputOverridden = itemRequest.outputOverridden;
-                core.debug(`Vault: ${secretVault}`);
-                core.debug(`Vault ID: ${vaultID}`);
-                core.debug(`Secret Title: ${secretTitle}`);
-                core.debug(`Field Name: ${fieldName}`);
-                core.debug(`Output String: ${outputString}`);
-                core.debug(`Output Overridden: ${outputOverridden}`);
                 if (vaultID !== undefined) {
                     await getSecret(vaultID, secretTitle, fieldName, outputString, outputOverridden);
                 }

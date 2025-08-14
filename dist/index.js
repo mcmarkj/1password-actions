@@ -42,17 +42,20 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const connect_1 = __nccwpck_require__(4088);
-const parsing = __importStar(__nccwpck_require__(9872));
 const ts_retry_1 = __nccwpck_require__(4151);
-const tooManyTries_1 = __nccwpck_require__(5626);
+const parsing = __importStar(__nccwpck_require__(9872));
 // Create new connector with HTTP Pooling
 const op = (0, connect_1.OnePasswordConnect)({
     serverURL: core.getInput('connect-server-url'),
     token: core.getInput('connect-server-token'),
     keepAlive: true
 });
-const vaults = {};
-const fail_on_not_found = core.getInput('fail-on-not-found') === 'true';
+const vaults = new Map();
+const failOnNotFound = core.getBooleanInput('fail-on-not-found');
+const retryCount = core.getInput('retry-count')
+    ? parseInt(core.getInput('retry-count'), 10)
+    : 5;
+const exportEnvVars = core.getBooleanInput('export-env-vars');
 const populateVaultsList = async () => {
     var _a, _b;
     try {
@@ -61,92 +64,106 @@ const populateVaultsList = async () => {
             const vaultName = (_a = vault.name) !== null && _a !== void 0 ? _a : '';
             const vaultID = (_b = vault.id) !== null && _b !== void 0 ? _b : '';
             if (vaultName && vaultID) {
-                vaults[vaultName] = vaultID;
+                vaults.set(vaultName, vaultID);
             }
             else {
                 core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`);
             }
         }
-        core.info(`Vaults list: ${JSON.stringify(vaults)}`);
+        core.info(`Vaults list: ${JSON.stringify(Object.fromEntries(vaults))}`);
     }
     catch (error) {
         core.error(`Error getting vaults: ${error}`);
-        core.setFailed(`🛑 Error getting vaults.`);
+        core.setFailed('🛑 Error getting vaults.');
         throw error;
     }
 };
-const getVaultID = async (vaultName) => {
-    var _a;
-    const vaultID = (_a = vaults[vaultName]) !== null && _a !== void 0 ? _a : undefined;
-    if (vaultID === undefined && fail_on_not_found) {
-        core.setFailed(`🛑 No vault matched name '${vaultName}'`);
+const getVaultID = (vaultName) => {
+    const vaultID = vaults.get(vaultName);
+    if (!vaultID) {
+        const message = `No vault matched name '${vaultName}'`;
+        if (failOnNotFound) {
+            throw new Error(`🛑 ${message}`);
+        }
+        core.warning(`⚠️ ${message}`);
     }
     return vaultID;
 };
+const delay = (0, ts_retry_1.createExponetialDelay)(1); // 1, 2, 4, 8, 16... second delay
+const withRetry = async (fn) => {
+    return (0, ts_retry_1.retryAsync)(fn, {
+        delay,
+        maxTry: retryCount,
+        onError: (err, currentTry) => {
+            core.warning(`Attempt ${currentTry} failed: ${err.message}`);
+            return true;
+        },
+        onMaxRetryFunc: err => {
+            throw new Error(`🛑 Too many retries: ${err.message}`);
+        }
+    });
+};
 const getSecret = async (vaultID, secretTitle, fieldName, outputString, outputOverridden) => {
-    var _a;
+    var _a, _b;
     try {
         const vaultItems = await op.getItemByTitle(vaultID, secretTitle);
-        const secretFields = vaultItems['fields'] || [];
-        // if fieldName wasn't specified, we just output any we find
+        const secretFields = (_a = vaultItems.fields) !== null && _a !== void 0 ? _a : [];
         let foundSecret = fieldName === '';
-        for (const item of secretFields) {
-            if (fieldName !== '' && item.label !== fieldName) {
+        for (const field of secretFields) {
+            if (fieldName && field.label !== fieldName)
                 continue;
-            }
-            if (item.value != null) {
-                let outputName = `${outputString}_${(_a = item.label) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
-                if (fieldName && outputOverridden) {
-                    outputName = outputString;
-                }
-                setOutput(outputName, item.value.toString());
-                setEnvironmental(outputName, item.value.toString());
+            if (field.value != null) {
+                const name = fieldName && outputOverridden
+                    ? outputString
+                    : `${outputString}_${((_b = field.label) !== null && _b !== void 0 ? _b : '').toLowerCase()}`;
+                const value = String(field.value);
+                setOutput(name, value);
+                setEnvironmental(name, value);
                 foundSecret = true;
-                if (fieldName) {
+                if (fieldName)
                     break;
-                }
             }
         }
         if (!foundSecret) {
-            if (fail_on_not_found) {
-                core.setFailed(`🛑 No secret matched '${secretTitle}' with field '${fieldName}'`);
+            const message = `No secret matched '${secretTitle}' with field '${fieldName}'`;
+            if (failOnNotFound) {
+                throw new Error(`🛑 ${message}`);
             }
-            else {
-                core.info(`⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`);
-            }
+            core.warning(`⚠️ ${message}`);
         }
     }
     catch (error) {
-        if (instanceOfHttpError(error)) {
-            if (fail_on_not_found) {
-                core.setFailed(`🛑 Error for secret: '${secretTitle}' - '${error.message}'`);
+        if (isHttpError(error)) {
+            const message = `Error for secret: '${secretTitle}' - '${error.message}'`;
+            if (failOnNotFound) {
+                throw new Error(`🛑 ${message}`);
             }
-            else {
-                core.info(`⚠️ Error for secret: '${secretTitle}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`);
-            }
+            core.warning(`⚠️ ${message}. Continuing as fail-on-not-found is disabled.`);
+            return;
         }
-        if (error instanceof Error)
-            core.setFailed(`Error getting secret: ${error.message}`);
+        throw error;
     }
 };
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-function instanceOfHttpError(object) {
-    return Number.isInteger(object.status);
+function isHttpError(error) {
+    return (typeof error === 'object' &&
+        error !== null &&
+        'status' in error &&
+        Number.isInteger(error.status));
 }
-const setOutput = async (outputName, secretValue) => {
+function setOutput(outputName, secretValue) {
     try {
         core.setSecret(secretValue);
         core.setOutput(outputName, secretValue);
-        core.info(`Secret ready for use: ${outputName}`.toString());
+        core.info(`Secret ready for use: ${outputName}`);
     }
     catch (error) {
         if (error instanceof Error)
             core.setFailed(error.message);
     }
-};
-const setEnvironmental = async (outputName, secretValue) => {
+}
+function setEnvironmental(outputName, secretValue) {
     try {
-        if (core.getInput('export-env-vars') === 'true') {
+        if (exportEnvVars) {
             core.setSecret(secretValue);
             core.exportVariable(outputName, secretValue);
             core.info(`Environmental variable globally ready for use in pipeline: '${outputName}'`);
@@ -156,47 +173,24 @@ const setEnvironmental = async (outputName, secretValue) => {
         if (error instanceof Error)
             core.setFailed(error.message);
     }
-};
+}
 async function run() {
     try {
-        const delay = (0, ts_retry_1.createExponetialDelay)(1); // 1, 2, 4, 8, 16... second delay
-        await (0, ts_retry_1.retryAsync)(async () => {
-            await populateVaultsList();
-            // Translate the vault path into it's respective segments
-            const secretPath = core.getInput('secret-path');
-            const itemRequests = parsing.parseItemRequestsInput(secretPath);
-            for (const itemRequest of itemRequests) {
-                // Get the vault ID for the vault
-                const secretVault = itemRequest.vault;
-                const vaultID = await getVaultID(secretVault);
-                // Set the secrets fields
-                const secretTitle = itemRequest.name;
-                const fieldName = itemRequest.field;
-                const outputString = itemRequest.outputName;
-                const outputOverridden = itemRequest.outputOverridden;
-                if (vaultID !== undefined) {
-                    await getSecret(vaultID, secretTitle, fieldName, outputString, outputOverridden);
-                }
-                else {
-                    throw Error("Can't find vault.");
-                }
-            }
-        }, {
-            delay,
-            maxTry: core.getInput('retry-count')
-                ? parseInt(core.getInput('retry-count'))
-                : 5,
-            onMaxRetryFunc: () => {
-                throw new tooManyTries_1.TooManyTries(new Error('🛑 Too many retries'));
-            }
-        });
+        await withRetry(populateVaultsList);
+        const secretPath = core.getInput('secret-path');
+        const itemRequests = parsing.parseItemRequestsInput(secretPath);
+        for (const itemRequest of itemRequests) {
+            const vaultID = getVaultID(itemRequest.vault);
+            if (!vaultID)
+                continue;
+            await withRetry(async () => getSecret(vaultID, itemRequest.name, itemRequest.field, itemRequest.outputName, itemRequest.outputOverridden));
+        }
     }
     catch (error) {
-        if ((0, ts_retry_1.isTooManyTries)(error))
-            core.setFailed('🛑 Too many retries');
         if (error instanceof Error)
             core.setFailed(error.message);
-        core.setFailed(`Action failed with unknown error.`);
+        else
+            core.setFailed('Action failed with unknown error.');
     }
 }
 run().catch(error => {
@@ -227,15 +221,15 @@ function parseItemRequestsInput(itemInput) {
     const output = [];
     for (const itemRequestLine of itemRequestLines) {
         let pathSpec = itemRequestLine;
-        let outputName = null;
-        let field = null;
+        let outputName;
+        let field;
         let outputOverridden = false;
         const renameSigilIndex = itemRequestLine.lastIndexOf('|');
         if (renameSigilIndex > -1) {
             pathSpec = itemRequestLine.substring(0, renameSigilIndex).trim();
             outputName = itemRequestLine.substring(renameSigilIndex + 1).trim();
             if (outputName.length < 1) {
-                throw Error(`You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`.toString());
+                throw new Error(`You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`);
             }
         }
         let pathParts = [];
@@ -254,17 +248,12 @@ function parseItemRequestsInput(itemInput) {
                 .filter(part => part.length !== 0);
         }
         if (pathParts.length < 2 && pathParts.length > 3) {
-            throw Error(`You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`.toString());
+            throw new Error(`You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`);
         }
         const [vaultQuoted, nameQuoted, fieldQuoted] = pathParts;
         const vault = vaultQuoted.replace(new RegExp('"', 'g'), '');
         const name = nameQuoted.replace(new RegExp('"', 'g'), '');
-        if (fieldQuoted) {
-            field = fieldQuoted.replace(new RegExp('"', 'g'), '');
-        }
-        else {
-            field = '';
-        }
+        field = fieldQuoted ? fieldQuoted.replace(new RegExp('"', 'g'), '') : '';
         if (!outputName) {
             outputName = normalizeOutputName(name).toLowerCase();
         }

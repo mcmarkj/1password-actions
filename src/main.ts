@@ -91,9 +91,10 @@ const getSecret = async (
     for (const field of secretFields) {
       if (fieldName && field.label !== fieldName) continue
       if (field.value != null) {
-        const name = fieldName && outputOverridden
-          ? outputString
-          : `${outputString}_${(field.label ?? '').toLowerCase()}`
+        const name =
+          fieldName && outputOverridden
+            ? outputString
+            : `${outputString}_${(field.label ?? '').toLowerCase()}`
         const value = String(field.value)
         setOutput(name, value)
         setEnvironmental(name, value)

@@ -21,8 +21,8 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
   const output: ItemRequest[] = []
   for (const itemRequestLine of itemRequestLines) {
     let pathSpec = itemRequestLine
-    let outputName = null
-    let field = null
+    let outputName: string | undefined
+    let field: string | undefined
     let outputOverridden = false
 
     const renameSigilIndex = itemRequestLine.lastIndexOf('|')
@@ -31,8 +31,8 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
       outputName = itemRequestLine.substring(renameSigilIndex + 1).trim()
 
       if (outputName.length < 1) {
-        throw Error(
-          `You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`.toString()
+        throw new Error(
+          `You must provide a value when mapping an item to a name. Input: "${itemRequestLine}"`
         )
       }
     }
@@ -54,19 +54,15 @@ export function parseItemRequestsInput(itemInput: string): ItemRequest[] {
     }
 
     if (pathParts.length < 2 && pathParts.length > 3) {
-      throw Error(
-        `You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`.toString()
+      throw new Error(
+        `You must provide a valid vault and item name. A field sector is optional. Input: "${itemRequestLine}"`
       )
     }
 
     const [vaultQuoted, nameQuoted, fieldQuoted] = pathParts
     const vault = vaultQuoted.replace(new RegExp('"', 'g'), '')
     const name = nameQuoted.replace(new RegExp('"', 'g'), '')
-    if (fieldQuoted) {
-      field = fieldQuoted.replace(new RegExp('"', 'g'), '')
-    } else {
-      field = ''
-    }
+    field = fieldQuoted ? fieldQuoted.replace(new RegExp('"', 'g'), '') : ''
 
     if (!outputName) {
       outputName = normalizeOutputName(name).toLowerCase()

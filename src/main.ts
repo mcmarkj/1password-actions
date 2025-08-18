@@ -1,9 +1,17 @@
 import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
-import * as parsing from './parsing'
 import {HttpError} from '@1password/connect/dist/lib/utils/error'
-import {createExponetialDelay, isTooManyTries, retryAsync} from 'ts-retry'
-import {TooManyTries} from 'ts-retry/lib/cjs/retry/tooManyTries'
+import {createExponetialDelay, retryAsync} from 'ts-retry'
+import * as parsing from './parsing'
+
+interface Field {
+  label?: string
+  value?: string | number | boolean
+}
+
+interface Item {
+  fields?: Field[]
+}
 
 // Create new connector with HTTP Pooling
 const op = OnePasswordConnect({
@@ -12,9 +20,13 @@ const op = OnePasswordConnect({
   keepAlive: true
 })
 
-const vaults: Record<string, string> = {}
+const vaults: Map<string, string> = new Map()
 
-const fail_on_not_found: boolean = core.getInput('fail-on-not-found') === 'true'
+const failOnNotFound = core.getBooleanInput('fail-on-not-found')
+const retryCount = core.getInput('retry-count')
+  ? parseInt(core.getInput('retry-count'), 10)
+  : 5
+const exportEnvVars = core.getBooleanInput('export-env-vars')
 
 const populateVaultsList = async (): Promise<void> => {
   try {
@@ -23,25 +35,45 @@ const populateVaultsList = async (): Promise<void> => {
       const vaultName = vault.name ?? ''
       const vaultID = vault.id ?? ''
       if (vaultName && vaultID) {
-        vaults[vaultName] = vaultID
+        vaults.set(vaultName, vaultID)
       } else {
         core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`)
       }
     }
-    core.info(`Vaults list: ${JSON.stringify(vaults)}`)
+    core.info(`Vaults list: ${JSON.stringify(Object.fromEntries(vaults))}`)
   } catch (error) {
     core.error(`Error getting vaults: ${error}`)
-    core.setFailed(`🛑 Error getting vaults.`)
+    core.setFailed('🛑 Error getting vaults.')
     throw error
   }
 }
 
-const getVaultID = async (vaultName: string): Promise<string | undefined> => {
-  const vaultID = vaults[vaultName] ?? undefined
-  if (vaultID === undefined && fail_on_not_found) {
-    core.setFailed(`🛑 No vault matched name '${vaultName}'`)
+const getVaultID = (vaultName: string): string | undefined => {
+  const vaultID = vaults.get(vaultName)
+  if (!vaultID) {
+    const message = `No vault matched name '${vaultName}'`
+    if (failOnNotFound) {
+      throw new Error(`🛑 ${message}`)
+    }
+    core.warning(`⚠️ ${message}`)
   }
   return vaultID
+}
+
+const delay = createExponetialDelay(1) // 1, 2, 4, 8, 16... second delay
+
+const withRetry = async <T>(fn: () => Promise<T>): Promise<T> => {
+  return retryAsync(fn, {
+    delay,
+    maxTry: retryCount,
+    onError: (err, currentTry) => {
+      core.warning(`Attempt ${currentTry} failed: ${err.message}`)
+      return true
+    },
+    onMaxRetryFunc: err => {
+      throw new Error(`🛑 Too many retries: ${err.message}`)
+    }
+  })
 }
 
 const getSecret = async (
@@ -52,82 +84,69 @@ const getSecret = async (
   outputOverridden: boolean
 ): Promise<void> => {
   try {
-    const vaultItems = await op.getItemByTitle(vaultID, secretTitle)
+    const vaultItems: Item = await op.getItemByTitle(vaultID, secretTitle)
+    const secretFields: Field[] = vaultItems.fields ?? []
 
-    const secretFields = vaultItems['fields'] || []
-
-    // if fieldName wasn't specified, we just output any we find
     let foundSecret = fieldName === ''
-    for (const item of secretFields) {
-      if (fieldName !== '' && item.label !== fieldName) {
-        continue
-      }
-      if (item.value != null) {
-        let outputName = `${outputString}_${item.label?.toLowerCase()}`
-        if (fieldName && outputOverridden) {
-          outputName = outputString
-        }
-        setOutput(outputName, item.value.toString())
-        setEnvironmental(outputName, item.value.toString())
+    for (const field of secretFields) {
+      if (fieldName && field.label !== fieldName) continue
+      if (field.value != null) {
+        const name =
+          fieldName && outputOverridden
+            ? outputString
+            : `${outputString}_${(field.label ?? '').toLowerCase()}`
+        const value = String(field.value)
+        setOutput(name, value)
+        setEnvironmental(name, value)
         foundSecret = true
-        if (fieldName) {
-          break
-        }
+        if (fieldName) break
       }
     }
 
     if (!foundSecret) {
-      if (fail_on_not_found) {
-        core.setFailed(
-          `🛑 No secret matched '${secretTitle}' with field '${fieldName}'`
-        )
-      } else {
-        core.info(
-          `⚠️ No secret matched '${secretTitle}' with field '${fieldName}'`
-        )
+      const message = `No secret matched '${secretTitle}' with field '${fieldName}'`
+      if (failOnNotFound) {
+        throw new Error(`🛑 ${message}`)
       }
+      core.warning(`⚠️ ${message}`)
     }
   } catch (error) {
-    if (instanceOfHttpError(error)) {
-      if (fail_on_not_found) {
-        core.setFailed(
-          `🛑 Error for secret: '${secretTitle}' - '${error.message}'`
-        )
-      } else {
-        core.info(
-          `⚠️ Error for secret: '${secretTitle}' - '${error.message}'. Continuing as fail-on-not-found is disabled.`
-        )
+    if (isHttpError(error)) {
+      const message = `Error for secret: '${secretTitle}' - '${error.message}'`
+      if (failOnNotFound) {
+        throw new Error(`🛑 ${message}`)
       }
+      core.warning(
+        `⚠️ ${message}. Continuing as fail-on-not-found is disabled.`
+      )
+      return
     }
-    if (error instanceof Error)
-      core.setFailed(`Error getting secret: ${error.message}`)
+    throw error
   }
 }
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-function instanceOfHttpError(object: any): object is HttpError {
-  return Number.isInteger(object.status)
+function isHttpError(error: unknown): error is HttpError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'status' in error &&
+    Number.isInteger((error as {status: unknown}).status)
+  )
 }
 
-const setOutput = async (
-  outputName: string,
-  secretValue: string
-): Promise<void> => {
+function setOutput(outputName: string, secretValue: string): void {
   try {
     core.setSecret(secretValue)
     core.setOutput(outputName, secretValue)
-    core.info(`Secret ready for use: ${outputName}`.toString())
+    core.info(`Secret ready for use: ${outputName}`)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
-const setEnvironmental = async (
-  outputName: string,
-  secretValue: string
-): Promise<void> => {
+function setEnvironmental(outputName: string, secretValue: string): void {
   try {
-    if (core.getInput('export-env-vars') === 'true') {
+    if (exportEnvVars) {
       core.setSecret(secretValue)
       core.exportVariable(outputName, secretValue)
       core.info(
@@ -141,51 +160,27 @@ const setEnvironmental = async (
 
 async function run(): Promise<void> {
   try {
-    const delay = createExponetialDelay(1) // 1, 2, 4, 8, 16... second delay
-    await retryAsync(
-      async () => {
-        await populateVaultsList()
-        // Translate the vault path into it's respective segments
-        const secretPath = core.getInput('secret-path')
-        const itemRequests = parsing.parseItemRequestsInput(secretPath)
+    await withRetry(populateVaultsList)
+    const secretPath = core.getInput('secret-path')
+    const itemRequests = parsing.parseItemRequestsInput(secretPath)
 
-        for (const itemRequest of itemRequests) {
-          // Get the vault ID for the vault
-          const secretVault = itemRequest.vault
-          const vaultID = await getVaultID(secretVault)
-          // Set the secrets fields
-          const secretTitle = itemRequest.name
-          const fieldName = itemRequest.field
-          const outputString = itemRequest.outputName
-          const outputOverridden = itemRequest.outputOverridden
+    for (const itemRequest of itemRequests) {
+      const vaultID = getVaultID(itemRequest.vault)
+      if (!vaultID) continue
 
-          if (vaultID !== undefined) {
-            await getSecret(
-              vaultID,
-              secretTitle,
-              fieldName,
-              outputString,
-              outputOverridden
-            )
-          } else {
-            throw Error("Can't find vault.")
-          }
-        }
-      },
-      {
-        delay,
-        maxTry: core.getInput('retry-count')
-          ? parseInt(core.getInput('retry-count'))
-          : 5,
-        onMaxRetryFunc: () => {
-          throw new TooManyTries(new Error('🛑 Too many retries'))
-        }
-      }
-    )
+      await withRetry(async () =>
+        getSecret(
+          vaultID,
+          itemRequest.name,
+          itemRequest.field,
+          itemRequest.outputName,
+          itemRequest.outputOverridden
+        )
+      )
+    }
   } catch (error) {
-    if (isTooManyTries(error)) core.setFailed('🛑 Too many retries')
     if (error instanceof Error) core.setFailed(error.message)
-    core.setFailed(`Action failed with unknown error.`)
+    else core.setFailed('Action failed with unknown error.')
   }
 }
 

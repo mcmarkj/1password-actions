@@ -26,12 +26,12 @@
   "license": "MIT",
   "dependencies": {
     "@1password/connect": "^1.4.2",
-    "@actions/core": "^2.0.2",
+    "@actions/core": "^3.0.0",
     "@types/istanbul-lib-report": "^3.0.3",
     "ts-retry": "^6.0.0"
   },
   "devDependencies": {
-    "@actions/core": "^2.0.2",
+    "@actions/core": "^3.0.0",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@types/jest": "^30.0.0",

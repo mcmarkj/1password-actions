@@ -152,7 +152,7 @@ function setEnvironmental(outputName: string, secretValue: string): void {
   }
 }
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     await withRetry(populateVaultsList)
     const secretPath = core.getInput('secret-path')
@@ -178,6 +178,6 @@ async function run(): Promise<void> {
   }
 }
 
-run().catch(error => {
+export const _runPromise = run().catch(error => {
   core.setFailed(`Action failed with error: ${error.message}`)
 })

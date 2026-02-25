@@ -1,5 +1,3 @@
-import {AxiosError} from 'axios'
-
 // --- Mocks (must be set up before importing main.ts) ---
 
 const mockListVaults = jest.fn()
@@ -45,8 +43,11 @@ jest.mock('ts-retry', () => {
 
 // --- Helpers ---
 
-function createAxiosTimeoutError(): AxiosError {
-  return new AxiosError('timeout of 15000ms exceeded', 'ETIMEDOUT')
+function createAxiosTimeoutError(): Error {
+  const error = new Error('timeout of 15000ms exceeded')
+  ;(error as unknown as Record<string, unknown>).code = 'ETIMEDOUT'
+  ;(error as unknown as Record<string, unknown>).isAxiosError = true
+  return error
 }
 
 function setupInputs(overrides: {

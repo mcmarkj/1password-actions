@@ -29,23 +29,17 @@ const retryCount = core.getInput('retry-count')
 const exportEnvVars = core.getBooleanInput('export-env-vars')
 
 const populateVaultsList = async (): Promise<void> => {
-  try {
-    const vaultsList = await op.listVaults()
-    for (const vault of vaultsList) {
-      const vaultName = vault.name ?? ''
-      const vaultID = vault.id ?? ''
-      if (vaultName && vaultID) {
-        vaults.set(vaultName, vaultID)
-      } else {
-        core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`)
-      }
+  const vaultsList = await op.listVaults()
+  for (const vault of vaultsList) {
+    const vaultName = vault.name ?? ''
+    const vaultID = vault.id ?? ''
+    if (vaultName && vaultID) {
+      vaults.set(vaultName, vaultID)
+    } else {
+      core.info(`Vault name/ID is empty: ${JSON.stringify(vault)}`)
     }
-    core.info(`Vaults list: ${JSON.stringify(Object.fromEntries(vaults))}`)
-  } catch (error) {
-    core.error(`Error getting vaults: ${error}`)
-    core.setFailed('🛑 Error getting vaults.')
-    throw error
   }
+  core.info(`Vaults list: ${JSON.stringify(Object.fromEntries(vaults))}`)
 }
 
 const getVaultID = (vaultName: string): string | undefined => {
@@ -158,7 +152,7 @@ function setEnvironmental(outputName: string, secretValue: string): void {
   }
 }
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     await withRetry(populateVaultsList)
     const secretPath = core.getInput('secret-path')
@@ -184,6 +178,6 @@ async function run(): Promise<void> {
   }
 }
 
-run().catch(error => {
+export const _runPromise = run().catch(error => {
   core.setFailed(`Action failed with error: ${error.message}`)
 })

@@ -50,12 +50,14 @@ function createAxiosTimeoutError(): Error {
   return error
 }
 
-function setupInputs(overrides: {
-  failOnNotFound?: boolean
-  exportEnvVars?: boolean
-  retryCount?: string
-  secretPath?: string
-} = {}): void {
+function setupInputs(
+  overrides: {
+    failOnNotFound?: boolean
+    exportEnvVars?: boolean
+    retryCount?: string
+    secretPath?: string
+  } = {}
+): void {
   const {
     failOnNotFound = true,
     exportEnvVars = false,

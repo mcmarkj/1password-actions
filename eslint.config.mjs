@@ -17,8 +17,10 @@ const compat = new FlatCompat({
 
 export default [{
     files: ["src/*.ts"],
-    ignores: ["dist/", "lib/", "node_modules/", "jest.config.js"],
+    ignores: ["dist/", "lib/", "node_modules/", "jest.config.js", "src/*.test.ts"],
 }, {
+    files: ["src/*.ts"],
+    ignores: ["src/*.test.ts"],
     plugins: {
         jest,
         "@typescript-eslint": typescriptEslint,

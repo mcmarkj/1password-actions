@@ -1,8 +1,12 @@
 import * as core from '@actions/core'
 import {OnePasswordConnect} from '@1password/connect'
-import {HttpError} from '@1password/connect/dist/lib/utils/error'
 import {createExponetialDelay, retryAsync} from 'ts-retry'
-import * as parsing from './parsing'
+import * as parsing from './parsing.js'
+
+interface HttpError {
+  status: number
+  message: string
+}
 
 interface Field {
   label?: string

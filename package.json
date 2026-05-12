@@ -3,6 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "description": "Grab 1Password Credentials from Connect API",
+  "type": "module",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",

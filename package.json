@@ -29,7 +29,7 @@
     "@1password/connect": "^1.4.2",
     "@actions/core": "^3.0.1",
     "@types/istanbul-lib-report": "^3.0.3",
-    "ts-retry": "^6.0.0"
+    "ts-retry": "^7.0.0"
   },
   "devDependencies": {
     "@actions/core": "^3.0.1",

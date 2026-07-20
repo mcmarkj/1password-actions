@@ -7,7 +7,16 @@ module.exports = {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': [
+      '@swc/jest',
+      {
+        jsc: {
+          parser: {syntax: 'typescript'},
+          target: 'es2022'
+        },
+        module: {type: 'commonjs'}
+      }
+    ]
   },
   verbose: true
 }

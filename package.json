@@ -40,7 +40,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.2.0",
     "@types/request": "^2.48.12",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/eslint-plugin": "^8.68.0",
     "@typescript-eslint/parser": "^8.67.0",
     "@vercel/ncc": "^0.45.0",
     "eslint": "^10.8.1",

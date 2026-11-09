@@ -26,7 +26,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@1password/connect": "^1.4.2",
+    "@1password/connect": "^1.4.3",
     "@actions/core": "^3.0.1",
     "@types/istanbul-lib-report": "^3.0.3",
     "ts-retry": "^6.0.0"
